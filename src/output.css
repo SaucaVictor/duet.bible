@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #121212;
+  --txt: #ffffff;
+  --backdrop-color: rgba(0, 0, 0, 0.4);
+  --sheet-bg: #18181b;
+  --handle-color: #52525b;
+  --text-muted: #a1a1aa;
+  --button-bg: #27272a;
+  --button-text: #d4d4d8;
+  --button-hover: #3f3f46;
+  --chapters: #363334;
+}
+
+html {
+  font-family: 'Roboto Serif', serif;
+  background-color: var(--bg);
+  color: var(--txt);
+  overflow: hidden;
+}

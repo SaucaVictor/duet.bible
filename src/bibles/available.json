@@ -1,0 +1,14 @@
+[
+  {
+    "lang": "ro",
+    "path": "./src/bibles/Romanian.json",
+    "title": "Biblia Cornilescu",
+    "copyright": "© 1921 Bible Society of Romania. All rights reserved."
+  },
+  {
+    "lang": "no",
+    "path": "./src/bibles/Norsk.json",
+    "title": "Norsk Bibel",
+    "copyright": "© Norsk Bibelselskap. Alle rettigheter forbeholdt."
+  }
+]

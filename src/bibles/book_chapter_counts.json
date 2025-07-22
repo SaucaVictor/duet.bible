@@ -1,0 +1,534 @@
+{
+  "ro": [
+    {
+      "book": "Geneza",
+      "chapters": 50
+    },
+    {
+      "book": "Exodul",
+      "chapters": 40
+    },
+    {
+      "book": "Leviticul",
+      "chapters": 27
+    },
+    {
+      "book": "Numeri",
+      "chapters": 36
+    },
+    {
+      "book": "Deuteronomul",
+      "chapters": 34
+    },
+    {
+      "book": "Iosua",
+      "chapters": 24
+    },
+    {
+      "book": "Judecători",
+      "chapters": 21
+    },
+    {
+      "book": "Rut",
+      "chapters": 4
+    },
+    {
+      "book": "1 Samuel",
+      "chapters": 31
+    },
+    {
+      "book": "2 Samuel",
+      "chapters": 24
+    },
+    {
+      "book": "1 Împărați",
+      "chapters": 22
+    },
+    {
+      "book": "2 Împărați",
+      "chapters": 25
+    },
+    {
+      "book": "1 Cronici",
+      "chapters": 29
+    },
+    {
+      "book": "2 Cronici",
+      "chapters": 36
+    },
+    {
+      "book": "Ezra",
+      "chapters": 10
+    },
+    {
+      "book": "Neemia",
+      "chapters": 13
+    },
+    {
+      "book": "Estera",
+      "chapters": 10
+    },
+    {
+      "book": "Iov",
+      "chapters": 42
+    },
+    {
+      "book": "Psalmi",
+      "chapters": 150
+    },
+    {
+      "book": "Proverbe",
+      "chapters": 31
+    },
+    {
+      "book": "Eclesiastul",
+      "chapters": 12
+    },
+    {
+      "book": "Cântarea Cântărilor",
+      "chapters": 8
+    },
+    {
+      "book": "Isaia",
+      "chapters": 66
+    },
+    {
+      "book": "Ieremia",
+      "chapters": 52
+    },
+    {
+      "book": "Plângerile lui Ieremia",
+      "chapters": 5
+    },
+    {
+      "book": "Ezechiel",
+      "chapters": 48
+    },
+    {
+      "book": "Daniel",
+      "chapters": 12
+    },
+    {
+      "book": "Osea",
+      "chapters": 14
+    },
+    {
+      "book": "Ioel",
+      "chapters": 3
+    },
+    {
+      "book": "Amos",
+      "chapters": 9
+    },
+    {
+      "book": "Obadia",
+      "chapters": 1
+    },
+    {
+      "book": "Iona",
+      "chapters": 4
+    },
+    {
+      "book": "Mica",
+      "chapters": 7
+    },
+    {
+      "book": "Naum",
+      "chapters": 3
+    },
+    {
+      "book": "Habacuc",
+      "chapters": 3
+    },
+    {
+      "book": "Ţefania",
+      "chapters": 3
+    },
+    {
+      "book": "Hagai",
+      "chapters": 2
+    },
+    {
+      "book": "Zaharia",
+      "chapters": 14
+    },
+    {
+      "book": "Maleahi",
+      "chapters": 4
+    },
+    {
+      "book": "Matei",
+      "chapters": 28
+    },
+    {
+      "book": "Marcu",
+      "chapters": 16
+    },
+    {
+      "book": "Luca",
+      "chapters": 24
+    },
+    {
+      "book": "Ioan",
+      "chapters": 21
+    },
+    {
+      "book": "Faptele Apostolilor",
+      "chapters": 28
+    },
+    {
+      "book": "Romani",
+      "chapters": 16
+    },
+    {
+      "book": "1 Corinteni",
+      "chapters": 16
+    },
+    {
+      "book": "2 Corinteni",
+      "chapters": 13
+    },
+    {
+      "book": "Galateni",
+      "chapters": 6
+    },
+    {
+      "book": "Efeseni",
+      "chapters": 6
+    },
+    {
+      "book": "Filipeni",
+      "chapters": 4
+    },
+    {
+      "book": "Coloseni",
+      "chapters": 4
+    },
+    {
+      "book": "1 Tesaloniceni",
+      "chapters": 5
+    },
+    {
+      "book": "2 Tesaloniceni",
+      "chapters": 3
+    },
+    {
+      "book": "1 Timotei",
+      "chapters": 6
+    },
+    {
+      "book": "2 Timotei",
+      "chapters": 4
+    },
+    {
+      "book": "Tit",
+      "chapters": 3
+    },
+    {
+      "book": "Filimon",
+      "chapters": 1
+    },
+    {
+      "book": "Evrei",
+      "chapters": 13
+    },
+    {
+      "book": "Iacov",
+      "chapters": 5
+    },
+    {
+      "book": "1 Petru",
+      "chapters": 5
+    },
+    {
+      "book": "2 Petru",
+      "chapters": 3
+    },
+    {
+      "book": "1 Ioan",
+      "chapters": 5
+    },
+    {
+      "book": "2 Ioan",
+      "chapters": 1
+    },
+    {
+      "book": "3 Ioan",
+      "chapters": 1
+    },
+    {
+      "book": "Iuda",
+      "chapters": 1
+    },
+    {
+      "book": "Apocalipsa",
+      "chapters": 22
+    }
+  ],
+  "no": [
+    {
+      "book": "Første Mosebok",
+      "chapters": 50
+    },
+    {
+      "book": "Andre Mosebok",
+      "chapters": 40
+    },
+    {
+      "book": "Tredje Mosebok",
+      "chapters": 27
+    },
+    {
+      "book": "Fjerde Mosebok",
+      "chapters": 36
+    },
+    {
+      "book": "Femte Mosebok",
+      "chapters": 34
+    },
+    {
+      "book": "Josva",
+      "chapters": 24
+    },
+    {
+      "book": "Dommerne",
+      "chapters": 21
+    },
+    {
+      "book": "Rut",
+      "chapters": 4
+    },
+    {
+      "book": "Første Samuelsbok",
+      "chapters": 31
+    },
+    {
+      "book": "Andre Samuelsbok",
+      "chapters": 24
+    },
+    {
+      "book": "Første Kongebok",
+      "chapters": 22
+    },
+    {
+      "book": "Andre Kongebok",
+      "chapters": 25
+    },
+    {
+      "book": "Første Krønikebok",
+      "chapters": 29
+    },
+    {
+      "book": "Andre Krønikebok",
+      "chapters": 36
+    },
+    {
+      "book": "Esra",
+      "chapters": 10
+    },
+    {
+      "book": "Nehemja",
+      "chapters": 13
+    },
+    {
+      "book": "Esters bok",
+      "chapters": 10
+    },
+    {
+      "book": "Job",
+      "chapters": 42
+    },
+    {
+      "book": "Salmenes bok",
+      "chapters": 150
+    },
+    {
+      "book": "Ordspråkene",
+      "chapters": 31
+    },
+    {
+      "book": "Forkynneren",
+      "chapters": 12
+    },
+    {
+      "book": "Høysangen",
+      "chapters": 8
+    },
+    {
+      "book": "Jesaja",
+      "chapters": 66
+    },
+    {
+      "book": "Jeremia",
+      "chapters": 52
+    },
+    {
+      "book": "Klagesangene",
+      "chapters": 5
+    },
+    {
+      "book": "Esekiel",
+      "chapters": 48
+    },
+    {
+      "book": "Daniel",
+      "chapters": 12
+    },
+    {
+      "book": "Hosea",
+      "chapters": 14
+    },
+    {
+      "book": "Joel",
+      "chapters": 3
+    },
+    {
+      "book": "Amos",
+      "chapters": 9
+    },
+    {
+      "book": "Obadja",
+      "chapters": 1
+    },
+    {
+      "book": "Jona",
+      "chapters": 4
+    },
+    {
+      "book": "Mika",
+      "chapters": 7
+    },
+    {
+      "book": "Nahum",
+      "chapters": 3
+    },
+    {
+      "book": "Habakkuk",
+      "chapters": 3
+    },
+    {
+      "book": "Sefanja",
+      "chapters": 3
+    },
+    {
+      "book": "Haggai",
+      "chapters": 2
+    },
+    {
+      "book": "Sakarja",
+      "chapters": 14
+    },
+    {
+      "book": "Malaki",
+      "chapters": 4
+    },
+    {
+      "book": "Matteus",
+      "chapters": 28
+    },
+    {
+      "book": "Markus",
+      "chapters": 16
+    },
+    {
+      "book": "Lukas",
+      "chapters": 24
+    },
+    {
+      "book": "Johannes",
+      "chapters": 21
+    },
+    {
+      "book": "Apostlenes gjerninger",
+      "chapters": 28
+    },
+    {
+      "book": "Romerne",
+      "chapters": 16
+    },
+    {
+      "book": "Første Korinterbrev",
+      "chapters": 16
+    },
+    {
+      "book": "Andre Korinterbrev",
+      "chapters": 13
+    },
+    {
+      "book": "Galaterne",
+      "chapters": 6
+    },
+    {
+      "book": "Efeserne",
+      "chapters": 6
+    },
+    {
+      "book": "Filipperne",
+      "chapters": 4
+    },
+    {
+      "book": "Kolosserne",
+      "chapters": 4
+    },
+    {
+      "book": "Første Tessalonikerbrev",
+      "chapters": 5
+    },
+    {
+      "book": "Andre Tessalonikerbrev",
+      "chapters": 3
+    },
+    {
+      "book": "Første Timoteusbrev",
+      "chapters": 6
+    },
+    {
+      "book": "Andre Timoteusbrev",
+      "chapters": 4
+    },
+    {
+      "book": "Titus",
+      "chapters": 3
+    },
+    {
+      "book": "Filemon",
+      "chapters": 1
+    },
+    {
+      "book": "Hebreerne",
+      "chapters": 13
+    },
+    {
+      "book": "Jakob",
+      "chapters": 5
+    },
+    {
+      "book": "Første Peterbrev",
+      "chapters": 5
+    },
+    {
+      "book": "Andre Peterbrev",
+      "chapters": 3
+    },
+    {
+      "book": "Første Johannesbrev",
+      "chapters": 5
+    },
+    {
+      "book": "Andre Johannesbrev",
+      "chapters": 1
+    },
+    {
+      "book": "Tredje Johannesbrev",
+      "chapters": 1
+    },
+    {
+      "book": "Judas",
+      "chapters": 1
+    },
+    {
+      "book": "Åpenbaringen",
+      "chapters": 22
+    }
+  ]
+}
