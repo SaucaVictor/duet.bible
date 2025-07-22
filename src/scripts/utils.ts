@@ -39,8 +39,9 @@ const Available = AvailableJson as AvailableType;
 export function useChapters() {
   const { firstLang, selectedBook, selectedChapter } = useStore();
 
-  function getChapterName() {
-    switch (firstLang.value) {
+  function getChapterName(lang?: string) {
+    const l = lang ?? firstLang.value;
+    switch (l) {
       case "no":
         return Norsk.books[selectedBook.value]?.chapters[selectedChapter.value]?.name || "";
       case "ro":
@@ -99,6 +100,16 @@ export function useChapters() {
     }
   }
   
+  function getVersesLen() {
+    switch (firstLang.value) {
+      case "no":
+        return Norsk.books[selectedBook.value]?.chapters[selectedChapter.value]?.verses.length || 0;
+      case "ro":
+        return Romanian.books[selectedBook.value]?.chapters[selectedChapter.value]?.verses.length || 0;
+      default:
+        return 0;
+    }
+  }
   function scrollToTop() {
     window.scrollTo({
       top: 0,
@@ -116,6 +127,7 @@ export function useChapters() {
     nextChapter,
     previousChapter,
     getVerses,
-    getDisclaimer
+    getDisclaimer,
+    getVersesLen
   };
 }

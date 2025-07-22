@@ -8,13 +8,21 @@ export function createStore() {
   const selectedBook = ref(0);
   const selectedChapter = ref(0);
   const selectedVerse = ref(0);
-
+  const selectVerse = ref(false);
+  const selectedHighlightVerse = ref(0);
+  const selectedHighlightVerseText = ref('');
+  const selectedHighlightVerseTitle = ref('');
+  
   return {
     firstLang,
     secondLang,
     selectedBook,
     selectedChapter,
-    selectedVerse
+    selectedVerse,
+    selectVerse,
+    selectedHighlightVerse,
+    selectedHighlightVerseText,
+    selectedHighlightVerseTitle
   };
 }
 
