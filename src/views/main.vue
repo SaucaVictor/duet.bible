@@ -44,7 +44,7 @@
         </div>
         <RouterLink to="/chapters" class="font-bold w-full h-full flex items-center justify-center">
           <div>
-            {{ getChapterName() }}
+            {{ getChapterName(firstLang) }}
           </div>
         </RouterLink>
         <div
@@ -57,24 +57,62 @@
     </div>
 
     <BottomSheet v-model="selectVerse">
-      <h3 class="text-lg font-semibold">{{ selectedHighlightVerseTitle + ':' + (selectedHighlightVerse + 1) }}</h3>
-      <p class="text-sm mt-2">{{ selectedHighlightVerseText }}</p>
+      <h3 class="text-lg font-semibold pb-1">{{ getChapterName(linkHighlight ? firstLang : undefined) + ':' + (selectedHighlightVerse + 1) }}</h3>
+      <span class="text-sm mt-3" :style="{
+          transition: 'all 0.2s ease',
+          backgroundColor: String(getColor()),
+          userSelect: 'none',
+          cursor: 'pointer'
+        }">{{ getVerse(linkHighlight ? firstLang : undefined) }}</span>
+      <div v-if="linkHighlight" class="pt-6 pb-1 transition-all duration-300 ease-in-out">
+        <h3 class="text-lg font-semibold pb-1">{{ getChapterName(secondLang) + ':' + (selectedHighlightVerse + 1) }}</h3>
+        <span class="text-sm mt-3" :style="{
+          transition: 'all 0.2s ease',
+          backgroundColor: String(getColor()),
+          userSelect: 'none',
+          cursor: 'pointer'
+        }">{{ getVerse(secondLang) }}</span>
+      </div>
+
+      <div class="flex overflow-x-auto w-full pt-4 pb-6 items-center">
+        <div class="flex items-center h-full pr-3">
+          <div
+            class="min-w-[3rem] flex items-center justify-center bg-[var(--chapters)] rounded-4xl aspect-square"
+            @click="() => { linkHighlight = !linkHighlight; if (linkHighlight) addHighlightWithLink(selectedLang, selectedBook, selectedChapter, selectedHighlightVerse, wasColor)}"
+          >
+            <i class="fa-solid fa-link" v-if="linkHighlight"></i>
+            <i class="fa-solid fa-link-slash" v-else></i>
+          </div>
+        </div>
+        <div
+          v-for="(color, index) in highlightColor"
+          :key="color"
+          class="flex-shrink-0 w-15 aspect-square rounded-2xl border-[0.1rem] mr-3"
+          :class="['bg-[' + color + ']']"
+          @click="addHighlightWithLink(selectedLang, selectedBook, selectedChapter, selectedHighlightVerse, index)"
+        >
+          <div class="w-full h-full flex items-center justify-center" v-if="!index">
+            <i class="fa-solid fa-xmark"></i>
+          </div>
+        </div>
+      </div>
     </BottomSheet>
   </div>
 </template>
 
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useStore } from "@/store";
-import { useChapters } from '@/scripts/utils';
+import { useChapters, highlightColor } from '@/scripts/utils';
 import BottomSheet from '../components/BottomSheet.vue'
 import Verses from '@/components/Verses.vue';
 
 const lock = ref(true);
-const { selectedVerse, selectVerse, selectedHighlightVerse, selectedHighlightVerseText, selectedHighlightVerseTitle } = useStore();
+const wasColor = ref(0);
+const { selectedVerse, selectVerse, selectedHighlightVerse, highlighted, selectedBook, selectedChapter, selectedLang, linkHighlight } = useStore();
 const { firstLang, secondLang } = useStore();
-const { getChapterName, nextChapter, previousChapter } = useChapters();
+const { getChapterName, nextChapter, previousChapter, getVerse } = useChapters();
 
 const scrollRef1 = ref<HTMLElement | null>(null);
 const scrollRef2 = ref<HTMLElement | null>(null);
@@ -107,4 +145,72 @@ onMounted(() => {
     selectedVerse.value = 0;
   }, 100);
 })
+
+function addHighlightWithLink(lang: string, book: number, chapter: number, verse: number, colorIndex: number){
+  wasColor.value = colorIndex;
+  addHighlight(lang, book, chapter, verse, colorIndex);
+  if (!linkHighlight.value) return;
+  if (lang === firstLang.value) {
+    addHighlight(secondLang.value, book, chapter, verse, colorIndex);
+  } else {
+    addHighlight(firstLang.value, book, chapter, verse, colorIndex);
+  }
+}
+
+function addHighlight(lang: string, book: number, chapter: number, verse: number, colorIndex: number) {
+  if (!colorIndex && highlighted.value[lang][book][chapter][verse]) {
+    delete highlighted.value[lang][book][chapter][verse];
+    return;
+  }
+  if (!highlighted.value[lang]) {
+    highlighted.value[lang] = {};
+  }
+  if (!highlighted.value[lang][book]) {
+    highlighted.value[lang][book] = {};
+  }
+  if (!highlighted.value[lang][book][chapter]) {
+    highlighted.value[lang][book][chapter] = {};
+  }
+  highlighted.value[lang][book][chapter][verse] = colorIndex;
+}
+
+function getColor(index?: boolean) {
+  const langHighlights = highlighted.value[selectedLang.value];
+  if (!langHighlights) return 'transparent';
+
+  const bookHighlights = langHighlights[selectedBook.value];
+  if (!bookHighlights) return 'transparent';
+
+  const chapterHighlights = bookHighlights[selectedChapter.value];
+  if (!chapterHighlights) return 'transparent';
+
+  const colorIndex = chapterHighlights[selectedHighlightVerse.value];
+  return index ? colorIndex : highlightColor[colorIndex] ?? 'transparent';
+}
+
+watch(
+  highlighted,
+  (newValue) => {
+    localStorage.setItem('highlighted', JSON.stringify(newValue));
+  },
+  { deep: true, immediate: true }
+);
+
+watch(selectVerse, (v) => {
+  if (v) {
+    wasColor.value = getColor(true) as number;
+  }
+})
+
+watch(selectedBook, (newVal) => {
+  localStorage.setItem('selectedBook', JSON.stringify(newVal))
+  },
+  { deep: true, immediate: true }
+)
+
+watch(selectedChapter, (newVal) => {
+  localStorage.setItem('selectedChapter', JSON.stringify(newVal))
+  },
+  { deep: true, immediate: true }
+)
 </script>

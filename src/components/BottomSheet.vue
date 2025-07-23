@@ -67,25 +67,38 @@ const startY = ref(0)
 const translateY = ref(0)
 const isEntering = ref(false)
 const dragging = ref(false)
+const startX = ref(0)
 
 function onTouchStart(event: TouchEvent) {
   if (!props.modelValue || isEntering.value) return
-  
+
   dragging.value = true
   startY.value = event.touches[0].clientY
+  startX.value = event.touches[0].clientX
   translateY.value = 0
 }
 
 function onTouchMove(event: TouchEvent) {
   if (!dragging.value || isEntering.value) return
-  
+
   const currentY = event.touches[0].clientY
+  const currentX = event.touches[0].clientX
+
   const deltaY = currentY - startY.value
-  
+  const deltaX = Math.abs(currentX - startX.value)
+
+  const threshold = 10
+  if (deltaX > deltaY && deltaX > threshold) {
+    dragging.value = false
+    resetPosition()
+    return
+  }
+
   if (deltaY > 0) {
     translateY.value = deltaY
   }
 }
+
 
 function onTouchEnd() {
   if (!dragging.value) return

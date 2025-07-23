@@ -1,4 +1,4 @@
-import { inject, provide, ref } from "vue";
+import { inject, provide, ref, type Ref } from "vue";
 
 const STORE_KEY = Symbol("BibleStore");
 
@@ -10,9 +10,10 @@ export function createStore() {
   const selectedVerse = ref(0);
   const selectVerse = ref(false);
   const selectedHighlightVerse = ref(0);
-  const selectedHighlightVerseText = ref('');
-  const selectedHighlightVerseTitle = ref('');
-  
+  const selectedLang = ref('');
+  const linkHighlight = ref(false);
+
+  const highlighted: Ref<{ [lang: string]: { [book: number]: { [chapter: number]: {[verseNumber: number]: number;} } } }> = ref({});
   return {
     firstLang,
     secondLang,
@@ -21,8 +22,9 @@ export function createStore() {
     selectedVerse,
     selectVerse,
     selectedHighlightVerse,
-    selectedHighlightVerseText,
-    selectedHighlightVerseTitle
+    highlighted,
+    selectedLang,
+    linkHighlight
   };
 }
 

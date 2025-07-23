@@ -35,19 +35,19 @@
   <div
   v-else
     id="verses"
-    class="w-full p-4 overflow-auto max-h-[calc(100vh-3.5rem)]"
+    class="w-full px-4 pb-20 overflow-auto max-h-[calc(100vh-3.5rem)]"
   >
     <Transition name="expand">
       <div>
         <div class="text-center pb-3 font-bold text-2xl">
-          {{ getChapterName() }}
+          {{ getChapterName(store.firstLang.value) }}
         </div>
         <div class="grid grid-cols-5 gap-2 px-3 py-2.5">
           <button
             v-for="verse in getVersesLen()"
             :key="verse"
             class="rounded-md bg-[var(--chapters)] text-center aspect-square"
-            @click="() => { store.selectedVerse.value = verse - 1; openVerses = false; router.push('/') }"
+            @click="choose(verse)"
           >
             {{ verse }}
           </button>
@@ -55,7 +55,15 @@
       </div>
     </Transition>
   </div>
-  <div class="fixed top-2 pt-2 left-3 right-3 bg-inherit" >
+  <div class="fixed top-2 pt-2 left-3 right-3 bg-inherit flex" >
+    <div class="flex items-center h-full pr-3">
+      <div
+        class="min-w-[3rem] flex items-center justify-center bg-[var(--chapters)] rounded-4xl aspect-square"
+        @click="() => { if (openVerses) openVerses = false; else router.push('/') }"
+      >
+        <i class="fa-solid fa-angle-left text-xl"></i>
+      </div>
+    </div>
     <div class="rounded-4xl bg-[var(--chapters)] flex items-center" v-if="!openVerses">
       <div class=" min-w-[3.5rem] flex items-center justify-center">
         <i class="fa-solid fa-search"></i>
@@ -66,14 +74,6 @@
         placeholder="Search"
         class="w-full pr-3 py-3.5 focus:outline-none h-full"
       />
-    </div>
-    <div v-else class="flex items-center h-full">
-      <div
-        class="min-w-[3rem] flex items-center justify-center bg-[var(--chapters)] rounded-4xl aspect-square"
-        @click="openVerses = false"
-      >
-        <i class="fa-solid fa-angle-left text-xl"></i>
-      </div>
     </div>
   </div>
  
@@ -155,9 +155,18 @@ function selectChapter(bookIndex: number, chapter: number) {
   openVerses.value = true;
 }
 
-onMounted(()=>{
+onMounted(() => {
   store.selectedVerse.value = 0;
+  setTimeout(() => {
+    onBookClick(store.selectedBook.value);
+  }, 100);
 })
+
+function choose(verse: number) {
+  store.selectedVerse.value = verse - 1;
+  openVerses.value = false;
+  router.push('/');
+}
 </script>
 
 <style scoped>

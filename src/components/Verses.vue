@@ -9,32 +9,34 @@
     <div
       v-for="(verse, index) in verses"
       :key="index"
-      class="verse-wrapper"
-      :style="{ marginBottom: '0.3rem', display: 'flex', alignItems: 'flex-start' }"
+      class="verse-wrapper pl-2"
+      :style="{ marginBottom: '0.5rem' }"
       ref="verseSpans"
     >
       <span
-        class="verse-number text-center pr-1"
-        :style="{ color: 'var(--verse-number-color)', userSelect: 'none' }"
+        class="verse-number"
+        :style="{
+          color: 'var(--verse-number-color)',
+          userSelect: 'none',
+          marginRight: '0.4rem'
+        }"
       >
-        {{ verse.verse }}
+        {{ verse.verse }}.
       </span>
-
       <span
-        class="verse-text pl-2"
+        class="verse-text"
         :style="{
           transition: 'all 0.2s ease',
-          backgroundColor: selectedVerses.has(index)
-            ? 'var(--verse-selected-bg)'
-            : 'transparent',
+          backgroundColor: getColor(index),
           userSelect: 'none',
-          cursor: 'pointer',
+          cursor: 'pointer'
         }"
         @click="toggleVerse(index, verse.text, getChapterName(lang))"
       >
         {{ verse.text }}
       </span>
     </div>
+
     <div
       class="text-center opacity-30 text-[0.6rem] pt-4 w-full flex items-center justify-center"
     >
@@ -47,11 +49,11 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
-import { useChapters } from "@/scripts/utils";
+import { useChapters, highlightColor } from "@/scripts/utils";
 import { useStore } from "@/store";
 
 const store = useStore();
-const { secondLang, selectedVerse, selectVerse, selectedHighlightVerse, selectedHighlightVerseText, selectedHighlightVerseTitle } = store;
+const { selectedVerse, selectVerse, selectedHighlightVerse, highlighted, selectedBook, selectedChapter, selectedLang } = store;
 const { getVerses, getDisclaimer, getChapterName } = useChapters();
 
 const props = defineProps<{ lang: string }>();
@@ -69,8 +71,7 @@ function toggleVerse(index: number, t: string, title: string) {
   else selectedVerses.value.add(index);
   selectVerse.value = true;
   selectedHighlightVerse.value = index;
-  selectedHighlightVerseText.value = t;
-  selectedHighlightVerseTitle.value = title;
+  selectedLang.value = props.lang;
 }
 
 const verseSpans = ref<HTMLElement[]>([]);
@@ -81,4 +82,18 @@ onMounted(()=>{
     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 })
+
+function getColor(index: number) {
+  const langHighlights = highlighted.value[props.lang];
+  if (!langHighlights) return 'transparent';
+
+  const bookHighlights = langHighlights[selectedBook.value];
+  if (!bookHighlights) return 'transparent';
+
+  const chapterHighlights = bookHighlights[selectedChapter.value];
+  if (!chapterHighlights) return 'transparent';
+
+  const colorIndex = chapterHighlights[index];
+  return highlightColor[colorIndex] ?? 'transparent';
+}
 </script>

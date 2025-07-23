@@ -37,10 +37,10 @@ const Chapters = ChaptersJson as BookChapterCounts;
 const Available = AvailableJson as AvailableType;
 
 export function useChapters() {
-  const { firstLang, selectedBook, selectedChapter } = useStore();
+  const { firstLang, selectedBook, selectedChapter, selectedHighlightVerse, selectedLang } = useStore();
 
   function getChapterName(lang?: string) {
-    const l = lang ?? firstLang.value;
+    const l = lang ?? selectedLang.value;
     switch (l) {
       case "no":
         return Norsk.books[selectedBook.value]?.chapters[selectedChapter.value]?.name || "";
@@ -122,12 +122,33 @@ export function useChapters() {
     return found ? found.copyright : "";
   }
   
+  function getVerse(lang?: string) {
+    const l = lang ?? selectedLang.value;
+    switch (l) {
+      case "no":
+        return Norsk.books[selectedBook.value]?.chapters[selectedChapter.value]?.verses[selectedHighlightVerse.value] || '';
+      case "ro":
+        return Romanian.books[selectedBook.value]?.chapters[selectedChapter.value]?.verses[selectedHighlightVerse.value] || '';
+      default:
+        return "";
+    }
+  }
+
   return {
     getChapterName,
     nextChapter,
     previousChapter,
     getVerses,
     getDisclaimer,
-    getVersesLen
+    getVersesLen,
+    getVerse
   };
 }
+
+export const highlightColor = [
+  'transparent',
+  'var(--h-c-1)',
+  'var(--h-c-2)',
+  'var(--h-c-3)',
+  'var(--h-c-4)'
+];
