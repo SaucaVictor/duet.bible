@@ -167,7 +167,7 @@ export function formatTimeAgo(timestamp: number): string {
 
   if (diffMs < hour) {
     const mins = Math.floor(diffMs / minute);
-    return `${mins} min ago`;
+    return mins ? `${mins} min ago` : 'now';
   } else if (diffMs < day) {
     const hrs = Math.floor(diffMs / hour);
     return `${hrs} h ago`;
