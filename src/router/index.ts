@@ -18,6 +18,11 @@ const router = createRouter({
       name: 'Chapters',
       component: () => import('../components/Chapters.vue'),
     },
+    {
+      path: '/saved',
+      name: 'Saved',
+      component: () => import('../components/Saved.vue'),
+    },
   ],
 })
 

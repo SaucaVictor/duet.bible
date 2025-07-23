@@ -29,6 +29,9 @@ importers:
       vue-router:
         specifier: ^4.5.1
         version: 4.5.1(vue@3.5.17(typescript@5.8.3))
+      vue-touch-ripple:
+        specifier: ^4.1.1
+        version: 4.1.1(vue@3.5.17(typescript@5.8.3))
     devDependencies:
       '@tailwindcss/vite':
         specifier: ^4.1.11
@@ -2005,6 +2008,11 @@ packages:
     resolution: {integrity: sha512-ogAF3P97NPm8fJsE4by9dwSYtDwXIY1nFY9T6DyQnGHd1E2Da94w9JIolpe42LJGIl0DwOHBi8TcRPlPGwbTtw==}
     peerDependencies:
       vue: ^3.2.0
+
+  vue-touch-ripple@4.1.1:
+    resolution: {integrity: sha512-pMs5XF8/jBNlZIKOsVtkhOv+YCFNzMOiPB/Y+kD4hbSKmC12Ho7ND7e0pnfR/wMJy1feNqUIrx53cWu/yhkQTQ==}
+    peerDependencies:
+      vue: 3.x
 
   vue-tsc@2.2.12:
     resolution: {integrity: sha512-P7OP77b2h/Pmk+lZdJ0YWs+5tJ6J2+uOQPo7tlBnY44QqQSPYvS0qVT4wqDJgwrZaLe47etJLLQRFia71GYITw==}
@@ -4054,6 +4062,10 @@ snapshots:
   vue-router@4.5.1(vue@3.5.17(typescript@5.8.3)):
     dependencies:
       '@vue/devtools-api': 6.6.4
+      vue: 3.5.17(typescript@5.8.3)
+
+  vue-touch-ripple@4.1.1(vue@3.5.17(typescript@5.8.3)):
+    dependencies:
       vue: 3.5.17(typescript@5.8.3)
 
   vue-tsc@2.2.12(typescript@5.8.3):

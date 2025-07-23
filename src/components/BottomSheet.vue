@@ -2,7 +2,7 @@
   <transition name="backdrop">
     <div
       v-if="modelValue"
-      class="fixed inset-0 z-40"
+      class="fixed inset-0 z-40" 
       :style="{ backgroundColor: 'var(--backdrop-color)' }"
       @click="handleBackdropClick"
     />
@@ -14,7 +14,7 @@
       ref="sheet"
       class="fixed bottom-0 inset-x-0 rounded-t-2xl shadow-xl z-50 touch-pan-y"
       :class="{ 'transition-transform duration-300 ease-out': !dragging || isEntering }"
-      :style="{ transform: `translateY(${translateY}px)`, backgroundColor: 'var(--sheet-bg)' }"
+      :style="{ transform: `translateY(${translateY}px)`, backgroundColor: 'var(--sheet-bg)',  height: full ? `${windowHeight}px` : '' }"
       @touchstart="onTouchStart"
       @touchmove="onTouchMove"
       @touchend="onTouchEnd"
@@ -31,7 +31,7 @@
           </p>
         </slot>
 
-        <button 
+        <button v-if="!full"
           @click="close"
           class="mt-4 w-full py-3 px-4 rounded-lg font-medium transition-colors"
           :style="{ 
@@ -47,12 +47,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, defineEmits, onMounted, onUnmounted, watch } from 'vue'
+import { ref, defineEmits, onMounted, onUnmounted, watch } from 'vue';
 
 const props = withDefaults(defineProps<{
   modelValue: boolean
   closeOnBackdrop?: boolean
   closeThreshold?: number
+  full?: boolean;
 }>(), {
   closeOnBackdrop: true,
   closeThreshold: 100
@@ -68,6 +69,7 @@ const translateY = ref(0)
 const isEntering = ref(false)
 const dragging = ref(false)
 const startX = ref(0)
+const windowHeight = ref(window.innerHeight * 0.95);
 
 function onTouchStart(event: TouchEvent) {
   if (!props.modelValue || isEntering.value) return
@@ -137,13 +139,21 @@ function handleKeydown(event: KeyboardEvent) {
 }
 
 onMounted(() => {
-  document.addEventListener('keydown', handleKeydown)
-})
+  document.addEventListener('keydown', handleKeydown);
+  const updateHeight = () => {
+    windowHeight.value = window.innerHeight * 0.95;
+  };
 
-onUnmounted(() => {
-  document.removeEventListener('keydown', handleKeydown)
-  document.body.style.overflow = ''
-})
+  window.addEventListener("resize", updateHeight);
+
+  updateHeight();
+
+  onUnmounted(() => {
+    window.removeEventListener("resize", updateHeight);
+    document.removeEventListener('keydown', handleKeydown);
+    document.body.style.overflow = '';
+  });
+});
 
 watch(() => props.modelValue, (isOpen) => {
   if (isOpen) {

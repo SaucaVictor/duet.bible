@@ -39,13 +39,13 @@ const Available = AvailableJson as AvailableType;
 export function useChapters() {
   const { firstLang, selectedBook, selectedChapter, selectedHighlightVerse, selectedLang } = useStore();
 
-  function getChapterName(lang?: string) {
+  function getChapterName(lang?: string, book?: number, chapter?: number) {
     const l = lang ?? selectedLang.value;
     switch (l) {
       case "no":
-        return Norsk.books[selectedBook.value]?.chapters[selectedChapter.value]?.name || "";
+        return Norsk.books[book ?? selectedBook.value]?.chapters[chapter ?? selectedChapter.value]?.name || '';
       case "ro":
-        return Romanian.books[selectedBook.value]?.chapters[selectedChapter.value]?.name || "";
+        return Romanian.books[book ?? selectedBook.value]?.chapters[chapter ?? selectedChapter.value]?.name || '';
       default:
         return "";
     }
@@ -122,18 +122,18 @@ export function useChapters() {
     return found ? found.copyright : "";
   }
   
-  function getVerse(lang?: string) {
+  function getVerse(lang?: string, book?: number, chapter?: number, verse?: number) {
     const l = lang ?? selectedLang.value;
     switch (l) {
       case "no":
-        return Norsk.books[selectedBook.value]?.chapters[selectedChapter.value]?.verses[selectedHighlightVerse.value] || '';
+        return Norsk.books[book ?? selectedBook.value]?.chapters[chapter ?? selectedChapter.value]?.verses[verse ?? selectedHighlightVerse.value] || '';
       case "ro":
-        return Romanian.books[selectedBook.value]?.chapters[selectedChapter.value]?.verses[selectedHighlightVerse.value] || '';
+        return Romanian.books[book ?? selectedBook.value]?.chapters[chapter ?? selectedChapter.value]?.verses[verse ?? selectedHighlightVerse.value] || '';
       default:
         return "";
     }
   }
-
+  
   return {
     getChapterName,
     nextChapter,
@@ -152,3 +152,35 @@ export const highlightColor = [
   'var(--h-c-3)',
   'var(--h-c-4)'
 ];
+
+export function formatTimeAgo(timestamp: number): string {
+  const now = Date.now();
+  const diffMs = now - timestamp;
+
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
+  const week = 7 * day;
+  const month = 30 * day;
+  const year = 365 * day;
+
+  if (diffMs < hour) {
+    const mins = Math.floor(diffMs / minute);
+    return `${mins} min ago`;
+  } else if (diffMs < day) {
+    const hrs = Math.floor(diffMs / hour);
+    return `${hrs} h ago`;
+  } else if (diffMs < week) {
+    const days = Math.floor(diffMs / day);
+    return `${days} day${days > 1 ? 's' : ''} ago`;
+  } else if (diffMs < month) {
+    const weeks = Math.floor(diffMs / week);
+    return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
+  } else if (diffMs < year) {
+    const months = Math.floor(diffMs / month);
+    return `${months} month${months > 1 ? 's' : ''} ago`;
+  } else {
+    const years = Math.floor(diffMs / year);
+    return `${years} year${years > 1 ? 's' : ''} ago`;
+  }
+}

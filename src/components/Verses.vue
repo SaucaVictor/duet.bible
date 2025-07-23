@@ -31,7 +31,7 @@
           userSelect: 'none',
           cursor: 'pointer'
         }"
-        @click="toggleVerse(index, verse.text, getChapterName(lang))"
+        @click="toggleVerse(index)"
       >
         {{ verse.text }}
       </span>
@@ -66,15 +66,17 @@ const verses = computed(() => {
 
 const selectedVerses = ref(new Set<number>());
 
-function toggleVerse(index: number, t: string, title: string) {
+function toggleVerse(index: number) {
+  try {
   if (selectedVerses.value.has(index)) selectedVerses.value.delete(index);
   else selectedVerses.value.add(index);
   selectVerse.value = true;
   selectedHighlightVerse.value = index;
   selectedLang.value = props.lang;
+  } catch (e) { console.log(e); }
 }
 
-const verseSpans = ref<HTMLElement[]>([]);
+const verseSpans = ref<(HTMLDivElement | null)[]>([]);
 
 onMounted(()=>{
   const el = verseSpans.value[selectedVerse.value];
@@ -93,7 +95,10 @@ function getColor(index: number) {
   const chapterHighlights = bookHighlights[selectedChapter.value];
   if (!chapterHighlights) return 'transparent';
 
-  const colorIndex = chapterHighlights[index];
+  if (!chapterHighlights[index]) return 'transparent';
+
+  const colorIndex = chapterHighlights[index][0];
   return highlightColor[colorIndex] ?? 'transparent';
 }
+
 </script>

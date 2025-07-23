@@ -1,90 +1,114 @@
 <template>
-  <div class="p-4 h-full flex flex-col w-full" v-if="!openVerses" id="chapters">
-    <div class="overflow-y-auto flex-grow pb-[4rem] mb-0.2">
-      <div
-        v-for="(book, index) in filteredBooks"
-        :key="index"
-        ref="bookRefs"
-        class="mb-0.5"
-      >
-        <button
-          class="w-full text-left px-3 py-4 rounded-lg"
-          @click="onBookClick(index)"
+  <Transition name="pop" v-if="visible">
+    <div v-if="!openVerses" class="p-4 h-full flex flex-col w-full" id="chapters">
+      <div class="overflow-y-auto flex-grow pb-[4rem] mb-0.2">
+        <div
+          v-for="(book, index) in filteredBooks"
+          :key="book.original"
+          ref="bookRefs"
+          class="mb-0.5"
         >
-          {{ book.book }}
-        </button>
-
-        <Transition name="expand" @after-leave="afterLeave">
-          <div
-            v-if="expandedBookIndex === index"
-            class="grid grid-cols-5 gap-2 px-3 py-1 overflow-hidden"
-          >
+          <touch-ripple :duration="200" class="overflow-hidden rounded-lg">
             <button
-              v-for="chapter in book.chapters"
-              :key="chapter"
-              class="rounded-md bg-[var(--chapters)] text-center aspect-square"
-              @click="selectChapter(index, chapter - 1)"
+              class="w-full text-left px-3 py-4 rounded-lg"
+              @click="onBookClick(index)"
             >
-              {{ chapter }}
+              {{ book.book }}
+            </button>
+          </touch-ripple>
+          <Transition name="expand" @after-leave="afterLeave">
+            <div
+              v-if="expandedBookIndex === index"
+              class="grid grid-cols-5 gap-2 px-3 py-1 overflow-hidden"
+            >
+              <button
+                v-for="chapter in book.chapters"
+                :key="chapter"
+                class="rounded-md bg-[var(--chapters)] text-center aspect-square"
+                @click="selectChapter(book.original, chapter - 1)"
+              >
+                <touch-ripple :duration="200" class="overflow-hidden h-full text-center flex items-center justify-center rounded-md">
+                  <div>
+                    {{ chapter }}
+                  </div>
+                </touch-ripple>
+              </button>
+            </div>
+          </Transition>
+        </div>
+      </div>
+    </div>
+
+    <div v-else id="verses" class="w-full px-4 pb-20 overflow-auto max-h-[calc(100vh-3.5rem)]">
+      <Transition name="expand">
+        <div>
+          <div class="text-center pb-3 font-bold text-2xl">
+            {{ getChapterName(store.firstLang.value) }}
+          </div>
+          <div class="grid grid-cols-5 gap-2 px-3 py-2.5">
+            <button
+              v-for="verse in getVersesLen()"
+              :key="verse"
+              class="rounded-md bg-[var(--chapters)] text-center aspect-square"
+              @click="choose(verse)"
+            >
+              <touch-ripple :duration="200" class="overflow-hidden h-full text-center flex items-center justify-center rounded-md">
+                <div>
+                  {{ verse }}
+                </div>
+              </touch-ripple>
             </button>
           </div>
-        </Transition>
-      </div>
-    </div>
-  </div>
-  <div
-  v-else
-    id="verses"
-    class="w-full px-4 pb-20 overflow-auto max-h-[calc(100vh-3.5rem)]"
-  >
-    <Transition name="expand">
-      <div>
-        <div class="text-center pb-3 font-bold text-2xl">
-          {{ getChapterName(store.firstLang.value) }}
         </div>
-        <div class="grid grid-cols-5 gap-2 px-3 py-2.5">
-          <button
-            v-for="verse in getVersesLen()"
-            :key="verse"
-            class="rounded-md bg-[var(--chapters)] text-center aspect-square"
-            @click="choose(verse)"
-          >
-            {{ verse }}
-          </button>
+      </Transition>
+    </div>
+  </Transition>
+
+  <div class="fixed top-2 pt-2 w-full bg-inherit flex justify-between">
+    <touch-ripple :duration="200" class="overflow-hidden rounded-full mx-3">
+      <div class="flex items-center h-full">
+        <div
+          class="min-w-[3rem] flex items-center justify-center bg-[var(--chapters)] rounded-4xl aspect-square"
+          @click="() => { if (openVerses) openVerses = false; else router.push('/') }"
+        >
+          <i class="fa-solid fa-angle-left text-xl"></i>
         </div>
       </div>
-    </Transition>
-  </div>
-  <div class="fixed top-2 pt-2 left-3 right-3 bg-inherit flex" >
-    <div class="flex items-center h-full pr-3">
-      <div
-        class="min-w-[3rem] flex items-center justify-center bg-[var(--chapters)] rounded-4xl aspect-square"
-        @click="() => { if (openVerses) openVerses = false; else router.push('/') }"
-      >
-        <i class="fa-solid fa-angle-left text-xl"></i>
+    </touch-ripple>
+    <touch-ripple :duration="200" class="overflow-hidden rounded-full w-full max-w-[calc(100%-9rem)]"v-if="!openVerses">
+      <div class="rounded-4xl bg-[var(--chapters)] flex items-center pr-4">
+        <div class="min-w-[3.5rem] flex items-center justify-center">
+          <i class="fa-solid fa-search"></i>
+        </div>
+        <input
+          type="text"
+          v-model="searchTerm"
+          placeholder="Search"
+          class="w-full py-3.5 focus:outline-none h-full"
+        />
       </div>
-    </div>
-    <div class="rounded-4xl bg-[var(--chapters)] flex items-center" v-if="!openVerses">
-      <div class=" min-w-[3.5rem] flex items-center justify-center">
-        <i class="fa-solid fa-search"></i>
+    </touch-ripple>
+    <touch-ripple :duration="200" class="overflow-hidden rounded-full mx-3" v-if="!openVerses">
+      <div class="flex items-center h-full">
+        <div
+          class="min-w-[3rem] flex items-center justify-center bg-[var(--chapters)] rounded-4xl aspect-square"
+          @click="toggleSort"
+        >
+          <i class="fa-solid fa-arrow-down-a-z text-xl"></i>
+        </div>
       </div>
-      <input
-        type="text"
-        v-model="searchTerm"
-        placeholder="Search"
-        class="w-full pr-3 py-3.5 focus:outline-none h-full"
-      />
-    </div>
+    </touch-ripple>
   </div>
- 
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick, onMounted } from "vue";
+import { ref, computed, nextTick, onMounted, watch } from "vue";
 import { useStore } from "@/store";
 import bookChapterCountsJson from "@/bibles/book_chapter_counts.json";
 import router from "@/router";
 import { useChapters } from "@/scripts/utils";
+import { TouchRipple } from 'vue-touch-ripple';
+import 'vue-touch-ripple/style.css';
 
 interface BookChapterCounts {
   [lang: string]: {
@@ -98,35 +122,47 @@ const { getVersesLen, getChapterName } = useChapters();
 
 const expandedBookIndex = ref<number | null>(null);
 const nextExpandedBookIndex = ref<number | null>(null);
-const bookRefs = ref<HTMLDivElement[]>([]);
+const bookRefs = ref<(HTMLDivElement | null)[]>([]);
 const searchTerm = ref("");
 const openVerses = ref(false);
+const visible = ref(false);
+const sortAlphabetically = ref(false);
 
 const bookChapterCounts = bookChapterCountsJson as BookChapterCounts;
 
 const books = computed(() => {
   const lang = store.firstLang.value;
   const books = bookChapterCounts[lang] || [];
-  return books.map(b => ({
+  return books.map((b, original) => ({
     ...b,
-    chapters: Array.from({ length: b.chapters }, (_, i) => i + 1)
+    chapters: b.chapters, 
+    original
   }));
 });
 
 const filteredBooks = computed(() => {
-  if (!searchTerm.value) return books.value;
-  const term = searchTerm.value.toLowerCase();
-  return books.value.filter(book => book.book.toLowerCase().includes(term));
+  let booksList = books.value;
+
+  if (searchTerm.value) {
+    const term = searchTerm.value.toLowerCase();
+    booksList = booksList.filter(book => book.book.toLowerCase().includes(term));
+  }
+
+  if (sortAlphabetically.value) {
+    return [...booksList].sort((a, b) => a.book.localeCompare(b.book, undefined, { sensitivity: 'base' }));
+  }
+
+  return booksList;
 });
 
-function onBookClick(index: number) {
-  if (expandedBookIndex.value === index) {
+function onBookClick(originalIndex: number) {
+  if (expandedBookIndex.value === originalIndex) {
     expandedBookIndex.value = null;
-  } else if (expandedBookIndex.value === null) {
-    expandedBookIndex.value = index;
-    scrollToBook(index);
+  } else if (expandedBookIndex.value === null || searchTerm.value) {
+    expandedBookIndex.value = originalIndex;
+    scrollToBook(originalIndex);
   } else {
-    nextExpandedBookIndex.value = index;
+    nextExpandedBookIndex.value = originalIndex;
     expandedBookIndex.value = null;
   }
 }
@@ -160,12 +196,18 @@ onMounted(() => {
   setTimeout(() => {
     onBookClick(store.selectedBook.value);
   }, 100);
+  visible.value = true;
 })
 
 function choose(verse: number) {
   store.selectedVerse.value = verse - 1;
   openVerses.value = false;
   router.push('/');
+}
+
+function toggleSort() {
+  return
+  sortAlphabetically.value = !sortAlphabetically.value;
 }
 </script>
 
@@ -198,4 +240,30 @@ function choose(verse: number) {
   top: 4.5rem;
   scroll-margin-top: 60px;
 }
+
+.pop-enter-active,
+.pop-leave-active {
+  transition: all 0.3s ease;
+}
+
+.pop-enter-from {
+  transform: scale(0.95);
+  opacity: 0;
+}
+
+.pop-enter-to {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.pop-leave-from {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.pop-leave-to {
+  transform: scale(0.95);
+  opacity: 0;
+}
+
 </style>
