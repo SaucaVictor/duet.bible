@@ -5,7 +5,7 @@ const STORE_KEY = Symbol("BibleStore");
 export function createStore() {
   const firstLang = ref("ro");
   const secondLang = ref("no");
-  const selectedBook = ref(0);
+  const selectedBook = ref(39);
   const selectedChapter = ref(0);
   const selectedVerse = ref(0);
   const selectVerse = ref(false);

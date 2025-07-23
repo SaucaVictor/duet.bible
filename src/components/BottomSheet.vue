@@ -47,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineEmits, onMounted, onUnmounted, watch } from 'vue';
+import { ref, onMounted, onUnmounted, watch } from 'vue';
 
 const props = withDefaults(defineProps<{
   modelValue: boolean
@@ -156,6 +156,7 @@ onMounted(() => {
 });
 
 watch(() => props.modelValue, (isOpen) => {
+  try {
   if (isOpen) {
     document.body.style.overflow = 'hidden'
     isEntering.value = true
@@ -171,6 +172,7 @@ watch(() => props.modelValue, (isOpen) => {
     document.body.style.overflow = ''
     isEntering.value = false
   }
+  } catch (_) {}
 })
 </script>
 

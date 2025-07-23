@@ -14,6 +14,6 @@ if (saved) {
   }
 }
 
-store.selectedBook.value = Number(localStorage.getItem('selectedBook')) || 0;
+store.selectedBook.value = Number(localStorage.getItem('selectedBook')) || 39;
 store.selectedChapter.value = Number(localStorage.getItem('selectedChapter')) || 0;
 </script>

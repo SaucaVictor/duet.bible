@@ -45,7 +45,20 @@
         </div>
       </div>
     </div>
+    <div v-if="!highlightedVerses.length" class="h-full flex items-center justify-center">
+      <div
+        class=" flex items-center justify-center text-4xl gap-1"
+        @click="router.push('/saved')"
+      >
+        <i class="fa-solid fa-bookmark" :style="{ color: highlightColor[1] }"></i>
+        <i class="fa-solid fa-book-bible pl-2" :style="{ color: highlightColor[2] }"></i>
+        <i class="fa-solid fa-equals px-3" :style="{ color: highlightColor[3] }"></i>
+        <i class="fa-solid fa-0" :style="{ color: highlightColor[4] }"></i>
+        <i class="fa-solid fa-question pl-1" :style="{ color: highlightColor[5] }"></i>
+      </div>
+    </div>
   </div>
+  
   <div class="fixed top-0 pt-2 w-full bg-[var(--bg)] flex justify-between">
     <touch-ripple :duration="200" class="overflow-hidden rounded-full mx-3 mb-2">
       <div class="flex items-center h-full">

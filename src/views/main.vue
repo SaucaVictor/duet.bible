@@ -281,13 +281,19 @@ function addHighlight(
   book: number,
   chapter: number,
   verse: number,
-  colorIndex: number
+  colorIndex: number | string
 ) {
-  const langMap = highlighted.value[lang] ??= {};
-  const bookMap = langMap[book] ??= {};
-  const chapterMap = bookMap[chapter] ??= {};
 
-  if (!colorIndex) {
+  if (typeof colorIndex !== 'number' || colorIndex === 0) {
+    const langMap = highlighted.value[lang];
+    if (!langMap) return;
+
+    const bookMap = langMap[book];
+    if (!bookMap) return;
+
+    const chapterMap = bookMap[chapter];
+    if (!chapterMap) return;
+
     delete chapterMap[verse];
 
     if (Object.keys(chapterMap).length === 0) {
@@ -305,11 +311,13 @@ function addHighlight(
     return;
   }
 
+  const langMap = highlighted.value[lang] ??= {};
+  const bookMap = langMap[book] ??= {};
+  const chapterMap = bookMap[chapter] ??= {};
+
   const now = Date.now();
   chapterMap[verse] = [colorIndex, now];
 }
-
-
 
 function getColor(index?: boolean) {
   const langHighlights = highlighted.value[selectedLang.value];
@@ -321,9 +329,13 @@ function getColor(index?: boolean) {
   const chapterHighlights = bookHighlights[selectedChapter.value];
   if (!chapterHighlights) return 'transparent';
 
-  const colorIndex = chapterHighlights[selectedHighlightVerse.value][0];
+  const highlight = chapterHighlights[selectedHighlightVerse.value];
+  if (!highlight || !highlight[0]) return index ? 0 : 'transparent';
+
+  const colorIndex = highlight[0];
   return index ? colorIndex : highlightColor[colorIndex] ?? 'transparent';
 }
+
 
 watch(
   highlighted,
@@ -335,7 +347,9 @@ watch(
 
 watch(selectVerse, (v) => {
   if (v) {
+    try {
     wasColor.value = getColor(true) as number;
+    } catch (_) {}
   }
 })
 

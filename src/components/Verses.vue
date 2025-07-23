@@ -16,7 +16,6 @@
       <span
         class="verse-number"
         :style="{
-          color: 'var(--verse-number-color)',
           userSelect: 'none',
           marginRight: '0.4rem'
         }"
@@ -68,12 +67,12 @@ const selectedVerses = ref(new Set<number>());
 
 function toggleVerse(index: number) {
   try {
-  if (selectedVerses.value.has(index)) selectedVerses.value.delete(index);
-  else selectedVerses.value.add(index);
-  selectVerse.value = true;
-  selectedHighlightVerse.value = index;
-  selectedLang.value = props.lang;
-  } catch (e) { console.log(e); }
+    if (selectedVerses.value.has(index)) selectedVerses.value.delete(index);
+    else selectedVerses.value.add(index);
+    selectVerse.value = true;
+    selectedHighlightVerse.value = index;
+    selectedLang.value = props.lang;
+  } catch (_) {}
 }
 
 const verseSpans = ref<(HTMLDivElement | null)[]>([]);
