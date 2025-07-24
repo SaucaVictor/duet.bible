@@ -151,7 +151,9 @@ export const highlightColor = [
   'var(--h-c-2)',
   'var(--h-c-3)',
   'var(--h-c-4)',
-  'var(--h-c-5)'
+  'var(--h-c-5)',
+  'var(--h-c-6)',
+  'var(--h-c-7)'
 ];
 
 export function formatTimeAgo(timestamp: number): string {

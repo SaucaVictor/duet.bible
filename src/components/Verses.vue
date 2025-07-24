@@ -31,9 +31,8 @@
           cursor: 'pointer'
         }"
         @click="toggleVerse(index)"
-      >
-        {{ verse.text }}
-      </span>
+        v-html="verse.text"
+      ></span>
     </div>
 
     <div
@@ -60,7 +59,10 @@ const props = defineProps<{ lang: string }>();
 const verses = computed(() => {
   const rawVerses = getVerses(props.lang) as string[];
   if (!Array.isArray(rawVerses)) return [];
-  return rawVerses.map((text, i) => ({ verse: i + 1, text }));
+  return rawVerses.map((text, i) => ({
+    verse: i + 1,
+    text: text.replace(/<wj>(.*?)<\/wj>/g, '<span class="wj">$1</span>')
+  }));
 });
 
 const selectedVerses = ref(new Set<number>());
@@ -99,5 +101,4 @@ function getColor(index: number) {
   const colorIndex = chapterHighlights[index][0];
   return highlightColor[colorIndex] ?? 'transparent';
 }
-
 </script>

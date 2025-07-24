@@ -11,10 +11,15 @@
   --button-text: #d4d4d8;
   --button-hover: #3f3f46;
   --chapters: #363334;
+  --saved: #1d1b1c;
   --h-c-1: #135c61;
   --h-c-2: #198558;
   --h-c-3: #b41c70;
   --h-c-4: #8f8100;
+  --h-c-5: #540581;
+  --h-c-6: #333333;
+  --h-c-7: #102e33;
+  --j: #e63946;
 }
 
 html {
@@ -22,4 +27,8 @@ html {
   background-color: var(--bg);
   color: var(--txt);
   overflow: hidden;
+}
+
+.wj {
+  color: var(--j);
 }

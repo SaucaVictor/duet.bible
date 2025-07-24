@@ -22,7 +22,7 @@
               {{ formatTimeAgo(item.timestampFirst) }}
             </div>
           </div>
-          <div class="text-sm pt-1.5 pl-2.5 pr-1">{{ item.textFirstLang }}</div>
+          <div class="text-sm pt-1.5 pl-2.5 pr-1" v-html="item.textFirstLang"></div>
         </div>
       </div>
 
@@ -41,7 +41,7 @@
               {{ formatTimeAgo(item.timestampSecond) }}
             </div>
           </div>
-          <div class="text-sm pt-1.5 pl-2.5 pr-1">{{ item.textSecondLang }}</div>
+          <div class="text-sm pt-1.5 pl-2.5 pr-1" v-html="item.textSecondLang"></div>
         </div>
       </div>
     </div>
@@ -160,8 +160,8 @@ const highlightedVerses = computed(() => {
       verse,
       chapterNameFirst,
       chapterNameSecond,
-      textFirstLang,
-      textSecondLang,
+      textFirstLang: textFirstLang.replace(/<wj>(.*?)<\/wj>/g, '<span class="wj">$1</span>'),
+      textSecondLang: textSecondLang.replace(/<wj>(.*?)<\/wj>/g, '<span class="wj">$1</span>'),
       colorFirst,
       colorSecond,
       lang: primaryLang,
