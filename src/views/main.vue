@@ -369,7 +369,7 @@ function share() {
   const shareUrl = 'https://duetbible.web.app/';
   if (navigator.share) {
     navigator.share({
-      title: '📖🤩Check out duel.bible!',  
+      title: '📖🤩Check out duet.bible!',  
       text: '',
       url: shareUrl
     })
