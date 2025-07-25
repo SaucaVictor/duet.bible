@@ -10,5 +10,11 @@
     "path": "./src/bibles/Norsk.json",
     "title": "Norsk Bibel",
     "copyright": "© Norsk Bibelselskap. Alle rettigheter forbeholdt."
+  },
+  {
+    "lang": "en",
+    "path": "./src/bibles/en.json",
+    "title": "World English Bible",
+    "copyright": "© eBible.org. All rights reserved."
   }
 ]
