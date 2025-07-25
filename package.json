@@ -12,6 +12,8 @@
     "tailwind:watch": "tailwindcss-cli -i ./src/styles.css -o ./src/output.css --watch"
   },
   "dependencies": {
+    "@capacitor/cli": "^7.4.2",
+    "@capacitor/core": "^7.4.2",
     "@fortawesome/fontawesome-free": "^6.7.2",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
@@ -22,6 +24,7 @@
     "vue-touch-ripple": "^4.1.1"
   },
   "devDependencies": {
+    "@capacitor/android": "^7.4.2",
     "@tailwindcss/vite": "^4.1.11",
     "@tsconfig/node22": "^22.0.2",
     "@types/node": "^22.16.5",
