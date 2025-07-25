@@ -1,5 +1,6 @@
 import RomanianJson from "@/bibles/ro.json";
 import NorskJson from "@/bibles/no.json";
+import EnglishJson from "@/bibles/en.json";
 import ChaptersJson from "@/bibles/book_chapter_counts.json";
 import AvailableJson from "@/bibles/available.json"
 import { useStore } from "@/store";
@@ -33,6 +34,7 @@ type AvailableType = [
 
 const Romanian = RomanianJson as BibleJson;
 const Norsk = NorskJson as BibleJson;
+const English = EnglishJson as BibleJson;
 const Chapters = ChaptersJson as BookChapterCounts;
 const Available = AvailableJson as AvailableType;
 
@@ -46,6 +48,8 @@ export function useChapters() {
         return Norsk.books[book ?? selectedBook.value]?.chapters[chapter ?? selectedChapter.value]?.name || '';
       case "ro":
         return Romanian.books[book ?? selectedBook.value]?.chapters[chapter ?? selectedChapter.value]?.name || '';
+      case "en":
+        return English.books[book ?? selectedBook.value]?.chapters[chapter ?? selectedChapter.value]?.name || '';
       default:
         return "";
     }
@@ -95,6 +99,8 @@ export function useChapters() {
         return Norsk.books[selectedBook.value]?.chapters[selectedChapter.value]?.verses || [];
       case "ro":
         return Romanian.books[selectedBook.value]?.chapters[selectedChapter.value]?.verses || [];
+      case "en":
+        return English.books[selectedBook.value]?.chapters[selectedChapter.value]?.verses || [];
       default:
         return "";
     }
@@ -105,6 +111,8 @@ export function useChapters() {
       case "no":
         return Norsk.books[selectedBook.value]?.chapters[selectedChapter.value]?.verses.length || 0;
       case "ro":
+        return Romanian.books[selectedBook.value]?.chapters[selectedChapter.value]?.verses.length || 0;
+      case "en":
         return Romanian.books[selectedBook.value]?.chapters[selectedChapter.value]?.verses.length || 0;
       default:
         return 0;
@@ -129,6 +137,8 @@ export function useChapters() {
         return Norsk.books[book ?? selectedBook.value]?.chapters[chapter ?? selectedChapter.value]?.verses[verse ?? selectedHighlightVerse.value] || '';
       case "ro":
         return Romanian.books[book ?? selectedBook.value]?.chapters[chapter ?? selectedChapter.value]?.verses[verse ?? selectedHighlightVerse.value] || '';
+      case "en":
+        return English.books[book ?? selectedBook.value]?.chapters[chapter ?? selectedChapter.value]?.verses[verse ?? selectedHighlightVerse.value] || '';
       default:
         return "";
     }

@@ -13,7 +13,7 @@ export function createStore() {
   const selectedLang = ref('');
   const linkHighlight = ref(false);
   const showOpacityAnimation = ref(false);
-
+  const lockedScroll = ref(true);
   const highlighted: Ref<{ [lang: string]: { [book: number]: { [chapter: number]: {[verseNumber: number]: [number, number]} } } }> = ref({});
   return {
     firstLang,
@@ -26,7 +26,8 @@ export function createStore() {
     highlighted,
     selectedLang,
     linkHighlight,
-    showOpacityAnimation
+    showOpacityAnimation,
+    lockedScroll
   };
 }
 
@@ -49,7 +50,7 @@ export function useStore(): Store {
 export const icons: Record<string, string> = {
   'ro': "https://cdn-icons-png.flaticon.com/512/330/330576.png",
   'no': "https://cdn-icons-png.flaticon.com/512/330/330542.png",
-  // "https://cdn-icons-png.flaticon.com/128/330/330425.png",
+  'en': "https://cdn-icons-png.flaticon.com/128/330/330425.png",
   // "https://cdn-icons-png.flaticon.com/512/330/330557.png",
   // "https://cdn-icons-png.flaticon.com/512/330/330523.png"
 };

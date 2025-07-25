@@ -21,9 +21,9 @@
       <touch-ripple :duration="200" class="overflow-hidden rounded-full">
         <div
           class="bg-[var(--chapters)] w-12 flex items-center justify-center aspect-square rounded-full"
-          @click="lock = !lock"
+          @click="lockedScroll = !lockedScroll"
         >
-          <i class="fa-solid fa-lock" v-if="lock"></i>
+          <i class="fa-solid fa-lock" v-if="lockedScroll"></i>
           <i class="fa-solid fa-lock-open" v-else></i>
         </div>
       </touch-ripple>
@@ -132,72 +132,7 @@
       </div>
     </BottomSheet>
 
-    <BottomSheet v-model="settings" full>
-      <div class="text-center text-5xl pt-6">
-        <h6>duet.bible</h6>
-      </div>
-      <div class="flex justify-center max-h-55 h-full">
-        <div class="bg-[var(--chapters)] rounded-xl flex mt-10 items-center justify-center">
-          <div class="p-2">
-            <div class="rounded-lg w-20 cursor-pointer h-12 justify-center items-center flex select-none" > 
-              <img :src="icons[firstLang]" class="h-15">
-            </div>
-            <div class="flex items-center justify-center py-1">
-              <touch-ripple :duration="200" class="overflow-hidden rounded-full">
-                <div
-                  class="bg-[var(--chapters)] w-12 flex items-center justify-center aspect-square rounded-full"
-                  @click="swap"
-                >
-                  <i class="fa-solid fa-right-left transform rotate-90"></i>
-                </div>
-              </touch-ripple>
-            </div>
-            <div class="rounded-lg w-20 cursor-pointer h-12 justify-center items-center flex select-none" > 
-              <img :src="icons[secondLang]" class="h-15">
-            </div>
-          </div>
-        </div>
-        <div class="w-full mt-10 ml-3 min-h-full">
-          <div class="flex min-h-12 min-w-full ">
-              <div class="rounded-lg h-15 aspect-square cursor-pointer justify-center items-center  select-none" > 
-                <touch-ripple :duration="200" class="overflow-hidden rounded-xl w-full bg-[var(--chapters)]">
-                  <div
-                    class="bg-[var(--chapters)] flex items-center justify-center aspect-square "
-                    @click="lock = !lock"
-                  >
-                    <i class="fa-solid fa-lock" v-if="lock"></i>
-                    <i class="fa-solid fa-lock-open" v-else></i>
-                  </div>
-                </touch-ripple>
-              </div>
-              <div class="flex w-full mr-0 h-15 pl-2">
-                <touch-ripple :duration="200" class="overflow-hidden rounded-xl w-full h-full bg-[var(--chapters)]">
-                  <div
-                    class="bg-[var(--chapters)] flex items-center justify-center h-full min-w-full"
-                    @click="share('📖🤩Check out duet.bible!', '', 'https://duetbible.web.app/')"
-                  >
-                    <i class="fa-solid fa-share-nodes"></i>
-                  </div>
-                </touch-ripple>
-              </div>
-          </div> 
-          
-          <div class="bg-[var(--chapters)] rounded-xl w-full mt-3 h-25">
-              <div class="rounded-lg cursor-pointer justify-center items-center flex select-none w-full h-full" > 
-                <touch-ripple :duration="200" class="overflow-hidden rounded-xl w-full h-full">
-                  <div
-                    class="bg-[var(--chapters)] flex items-center justify-center w-full h-full text-xl"
-                    @click="router.push('/saved')"
-                  >
-                    <i class="fa-solid fa-bookmark"></i>
-                    <i class="fa-solid fa-book-bible pl-3"></i>
-                  </div>
-                </touch-ripple>
-              </div>
-          </div>
-        </div>
-      </div>
-    </BottomSheet>
+    <Settings v-model="settings"/>
   </div>
 </template>
 
@@ -205,28 +140,29 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, onUnmounted } from "vue";
 import { useRoute, useRouter } from 'vue-router'
-import { useStore, icons } from "@/store";
-import { useChapters, highlightColor, decodeCBase58, share } from '@/scripts/utils';
+import { useStore } from "@/store";
+import { useChapters, highlightColor, decodeCBase58 } from '@/scripts/utils';
+import Settings from "@/components/Settings.vue";
 import BottomSheet from '../components/BottomSheet.vue'
 import Verses from '@/components/Verses.vue';
 import { TouchRipple } from 'vue-touch-ripple';
 import 'vue-touch-ripple/style.css';
-import router from "@/router";
 
-const lock = ref(true);
+
 const wasColor = ref(0);
-const { selectedVerse, selectVerse, selectedHighlightVerse, highlighted, selectedBook, selectedChapter, selectedLang, linkHighlight, showOpacityAnimation } = useStore();
+const { selectedVerse, selectVerse, selectedHighlightVerse, highlighted, selectedBook, selectedChapter, selectedLang, linkHighlight, showOpacityAnimation, lockedScroll } = useStore();
 const { firstLang, secondLang } = useStore();
 const { getChapterName, nextChapter, previousChapter, getVerse } = useChapters();
 const windowHeight = ref(window.innerHeight);
 const settings = ref(false);
+
 
 const scrollRef1 = ref<HTMLElement | null>(null);
 const scrollRef2 = ref<HTMLElement | null>(null);
 let isSyncingScroll = false;
 
 function onScroll(scrolledDiv: number) {
-  if (isSyncingScroll || !lock.value) return;
+  if (isSyncingScroll || !lockedScroll.value) return;
 
   isSyncingScroll = true;
 
@@ -384,4 +320,5 @@ h6 {
   font-family: 'Alice', serif;
   font-weight: 700;
 }
+
 </style>
