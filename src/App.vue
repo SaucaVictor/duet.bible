@@ -17,13 +17,8 @@ if (saved) {
 store.selectedBook.value = Number(localStorage.getItem('selectedBook')) || 39;
 store.selectedChapter.value = Number(localStorage.getItem('selectedChapter')) || 0;
 function loadLang(key: string, fallback: string) {
-  const raw = localStorage.getItem(key);
-  try {
-    const parsed = JSON.parse(raw ?? '""');
-    return typeof parsed === 'string' ? parsed : fallback;
-  } catch {
-    return raw || fallback;
-  }
+  const raw = localStorage.getItem(key) || fallback;
+  return raw;
 }
 
 store.firstLang.value = loadLang('firstLang', 'ro');
