@@ -93,7 +93,7 @@
           backgroundColor: String(getColor()),
           userSelect: 'none',
           cursor: 'pointer'
-        }">{{ getVerse(linkHighlight ? firstLang : undefined) }}</span>
+        }" v-html="getVerse(linkHighlight ? firstLang : undefined)"></span>
       <div v-if="linkHighlight" class="pt-6 pb-1 transition-all duration-300 ease-in-out">
         <h3 class="text-lg font-semibold pb-1">{{ getChapterName(secondLang) + ':' + (selectedHighlightVerse + 1) }}</h3>
         <span class="text-sm mt-3" :style="{
@@ -101,7 +101,7 @@
           backgroundColor: String(getColor()),
           userSelect: 'none',
           cursor: 'pointer'
-        }">{{ getVerse(secondLang) }}</span>
+        }" v-html="getVerse(secondLang)"></span>
       </div>
 
       <div class="flex overflow-x-auto w-full pt-4 pb-6 items-center">

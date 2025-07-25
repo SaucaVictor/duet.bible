@@ -166,7 +166,7 @@ import { TouchRipple } from 'vue-touch-ripple';
 import 'vue-touch-ripple/style.css';
 
 const { highlighted, firstLang, secondLang, selectedBook, selectedChapter, selectedVerse, showOpacityAnimation } = useStore();
-const { getVerse, getChapterName } = useChapters();
+const { getVerse, getChapterName, goToVerse } = useChapters();
 
 const highlightedVerses = computed(() => {
   const result: {
@@ -263,14 +263,6 @@ const highlightedVerses = computed(() => {
 
   return result;
 });
-
-function goToVerse(book: number, chapter: number, verse: number) {
-  selectedBook.value = book;
-  selectedChapter.value = chapter;
-  selectedVerse.value = verse;
-  showOpacityAnimation.value = true;
-  router.push('/');
-}
 
 const windowHeight = ref(window.innerHeight);
 onMounted(() => {

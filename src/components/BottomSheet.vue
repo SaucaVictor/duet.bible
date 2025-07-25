@@ -2,7 +2,8 @@
   <transition name="backdrop">
     <div
       v-if="modelValue"
-      class="fixed inset-0 z-40" 
+      class="fixed inset-0" 
+      :class="[`z-${z ?? 40}`]"
       :style="{ backgroundColor: 'var(--backdrop-color)' }"
       @click="handleBackdropClick"
     />
@@ -30,6 +31,13 @@
             No content provided.
           </p>
         </slot>
+        <div
+          class="overflow-y-auto max-h-[60vh] -mx-6 px-6 mb-4"
+          @touchmove.stop
+          @wheel.stop
+        >
+          <slot name="scrollable" ></slot>
+        </div>
         <div class="flex">
           <button v-if="!full"
             @click="close"
@@ -43,7 +51,7 @@
           </button>
           <div class="mt-4 ml-2">
           <touch-ripple :duration="200" class="overflow-hidden rounded-lg">
-            <div v-if="!full"
+            <div v-if="!noShare"
               @click="shareVerse"
               class="rounded-lg font-medium transition-colors py-3 px-4.5"
               :style="{ 
@@ -71,10 +79,13 @@ const { getChapterName } = useChapters();
 const { selectedBook, selectedChapter, selectedHighlightVerse } = useStore();
 
 const props = withDefaults(defineProps<{
-  modelValue: boolean
-  closeOnBackdrop?: boolean
-  closeThreshold?: number
+  modelValue: boolean;
+  closeOnBackdrop?: boolean;
+  closeThreshold?: number;
   full?: boolean;
+  manualToggle?: boolean;
+  z?: number;
+  noShare?: boolean;
 }>(), {
   closeOnBackdrop: true,
   closeThreshold: 100
@@ -195,6 +206,12 @@ watch(() => props.modelValue, (isOpen) => {
       isEntering.value = false
     }
   } catch (_) {}
+});
+
+watch(() => props.manualToggle, (newV, oldV) => {
+  if (newV !== oldV) {
+    close();
+  }
 });
 
 function preventTouchMove(event: TouchEvent) {

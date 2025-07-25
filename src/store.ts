@@ -14,6 +14,8 @@ export function createStore() {
   const linkHighlight = ref(false);
   const showOpacityAnimation = ref(false);
   const lockedScroll = ref(true);
+  const randomVerse: Ref<[number, number, number]> = ref([0, 0, 0]);
+
   const highlighted: Ref<{ [lang: string]: { [book: number]: { [chapter: number]: {[verseNumber: number]: [number, number]} } } }> = ref({});
   return {
     firstLang,
@@ -27,7 +29,8 @@ export function createStore() {
     selectedLang,
     linkHighlight,
     showOpacityAnimation,
-    lockedScroll
+    lockedScroll,
+    randomVerse
   };
 }
 

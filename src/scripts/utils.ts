@@ -4,6 +4,7 @@ import EnglishJson from "@/bibles/en.json";
 import ChaptersJson from "@/bibles/book_chapter_counts.json";
 import AvailableJson from "@/bibles/available.json"
 import { useStore } from "@/store";
+import router from "@/router";
 
 type BibleJson = {
   books: {
@@ -39,7 +40,7 @@ const Chapters = ChaptersJson as BookChapterCounts;
 const Available = AvailableJson as AvailableType;
 
 export function useChapters() {
-  const { firstLang, selectedBook, selectedChapter, selectedHighlightVerse, selectedLang } = useStore();
+  const { firstLang, selectedBook, selectedChapter, selectedHighlightVerse, selectedLang, randomVerse, selectedVerse, showOpacityAnimation } = useStore();
 
   function getChapterName(lang?: string, book?: number, chapter?: number) {
     const l = lang ?? selectedLang.value;
@@ -93,14 +94,14 @@ export function useChapters() {
     scrollToTop();
   }
   
-  function getVerses(lang: string) {
+  function getVerses(lang: string, book?: number, chapter?: number) {
     switch (lang) {
       case "no":
-        return Norsk.books[selectedBook.value]?.chapters[selectedChapter.value]?.verses || [];
+        return Norsk.books[book ?? selectedBook.value]?.chapters[chapter ?? selectedChapter.value]?.verses || [];
       case "ro":
-        return Romanian.books[selectedBook.value]?.chapters[selectedChapter.value]?.verses || [];
+        return Romanian.books[book ?? selectedBook.value]?.chapters[chapter ?? selectedChapter.value]?.verses || [];
       case "en":
-        return English.books[selectedBook.value]?.chapters[selectedChapter.value]?.verses || [];
+        return English.books[book ?? selectedBook.value]?.chapters[chapter ?? selectedChapter.value]?.verses || [];
       default:
         return "";
     }
@@ -144,6 +145,28 @@ export function useChapters() {
     }
   }
   
+  function getRandomVerse(lang?: string) {
+    const l = lang ?? firstLang.value;
+    const books = Chapters[l];
+    const bookIndex = Math.floor(Math.random() * books.length);
+
+    const chapterCount = books[bookIndex].chapters;
+    const chapterIndex = Math.floor(Math.random() * chapterCount);
+
+    const verses = getVerses(l, bookIndex, chapterIndex);
+    const verseIndex = verses.length > 0 ? Math.floor(Math.random() * verses.length) : 0;
+
+    randomVerse.value = [bookIndex, chapterIndex, verseIndex];
+  }
+
+  function goToVerse(book: number, chapter: number, verse: number) {
+    selectedBook.value = book;
+    selectedChapter.value = chapter;
+    selectedVerse.value = verse;
+    showOpacityAnimation.value = true;
+    router.push('/');
+  }
+
   return {
     getChapterName,
     nextChapter,
@@ -151,7 +174,9 @@ export function useChapters() {
     getVerses,
     getDisclaimer,
     getVersesLen,
-    getVerse
+    getVerse,
+    getRandomVerse,
+    goToVerse
   };
 }
 
