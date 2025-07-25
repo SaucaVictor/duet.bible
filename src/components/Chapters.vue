@@ -69,7 +69,7 @@
       <div class="flex items-center h-full">
         <div
           class="min-w-[3rem] flex items-center justify-center bg-[var(--chapters)] rounded-4xl aspect-square"
-          @click="() => { if (openVerses) openVerses = false; else router.push('/') }"
+          @click="() => { if (openVerses) openVerses = false; else { router.push('/'), store.showOpacityAnimation.value = false; } }"
         >
           <i class="fa-solid fa-angle-left text-xl"></i>
         </div>
@@ -192,6 +192,7 @@ function selectChapter(bookIndex: number, chapter: number) {
 }
 
 onMounted(() => {
+  store.showOpacityAnimation.value = true;
   store.selectedVerse.value = 0;
   setTimeout(() => {
     onBookClick(store.selectedBook.value);

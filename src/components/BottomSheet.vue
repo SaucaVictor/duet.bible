@@ -30,17 +30,31 @@
             No content provided.
           </p>
         </slot>
-
-        <button v-if="!full"
-          @click="close"
-          class="mt-4 w-full py-3 px-4 rounded-lg font-medium transition-colors"
-          :style="{ 
-            backgroundColor: 'var(--button-bg)', 
-            color: 'var(--button-text)' 
-          }"
-        >
-          Close
-        </button>
+        <div class="flex">
+          <button v-if="!full"
+            @click="close"
+            class="mt-4 w-full py-3 px-4 rounded-lg font-medium transition-colors"
+            :style="{ 
+              backgroundColor: 'var(--button-bg)', 
+              color: 'var(--button-text)' 
+            }"
+          >
+            Close
+          </button>
+          <div class="mt-4 ml-2">
+          <touch-ripple :duration="200" class="overflow-hidden rounded-lg">
+            <div v-if="!full"
+              @click="shareVerse"
+              class="rounded-lg font-medium transition-colors py-3 px-4.5"
+              :style="{ 
+                backgroundColor: 'var(--button-bg)', 
+                color: 'var(--button-text)' 
+              }"
+            >
+              <i class="fa-solid fa-share-nodes"></i>
+            </div>
+          </touch-ripple></div>
+        </div>
       </div>
     </div>
   </transition>
@@ -48,6 +62,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue';
+import { useChapters, encodeCBase58, share } from '@/scripts/utils';
+import { useStore } from '@/store';
+import { TouchRipple } from 'vue-touch-ripple';
+import 'vue-touch-ripple/style.css';
+
+const { getChapterName } = useChapters();
+const { selectedBook, selectedChapter, selectedHighlightVerse } = useStore();
 
 const props = withDefaults(defineProps<{
   modelValue: boolean
@@ -73,7 +94,7 @@ const windowHeight = ref(window.innerHeight * 0.95);
 
 function onTouchStart(event: TouchEvent) {
   if (!props.modelValue || isEntering.value) return
-
+  //preventTouchMove(event);
   dragging.value = true
   startY.value = event.touches[0].clientY
   startX.value = event.touches[0].clientX
@@ -82,7 +103,7 @@ function onTouchStart(event: TouchEvent) {
 
 function onTouchMove(event: TouchEvent) {
   if (!dragging.value || isEntering.value) return
-
+  preventTouchMove(event);
   const currentY = event.touches[0].clientY
   const currentX = event.touches[0].clientX
 
@@ -157,23 +178,38 @@ onMounted(() => {
 
 watch(() => props.modelValue, (isOpen) => {
   try {
-  if (isOpen) {
-    document.body.style.overflow = 'hidden'
-    isEntering.value = true
-    translateY.value = sheet.value?.offsetHeight || 400
-    
-    setTimeout(() => {
-      translateY.value = 0
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+      isEntering.value = true
+
+      translateY.value = props.full ? windowHeight.value : (sheet.value?.offsetHeight || 400)
+
       setTimeout(() => {
-        isEntering.value = false
-      }, 300)
-    }, 50)
-  } else {
-    document.body.style.overflow = ''
-    isEntering.value = false
-  }
+        translateY.value = 0
+        setTimeout(() => {
+          isEntering.value = false
+        }, 300)
+      }, 50)
+    } else {
+      document.body.style.overflow = ''
+      isEntering.value = false
+    }
   } catch (_) {}
-})
+});
+
+function preventTouchMove(event: TouchEvent) {
+  if (props.modelValue) {
+    event.preventDefault();
+  }
+}
+
+
+
+function shareVerse(){
+  const t = getChapterName() + selectedHighlightVerse;
+  const l = 'https://duetbible.web.app/' + encodeCBase58(selectedBook.value, selectedChapter.value, selectedHighlightVerse.value)
+  share(t, '', l);
+}
 </script>
 
 <style scoped>

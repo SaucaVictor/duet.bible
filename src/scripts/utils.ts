@@ -187,3 +187,62 @@ export function formatTimeAgo(timestamp: number): string {
     return `${years} year${years > 1 ? 's' : ''} ago`;
   }
 }
+
+const b58 = '7GFrpLHhKbtfqY2AQiDj6kEvUn1zdXJ3VT9BMNsWCoSa58wRemc4gPZxuy';
+
+export function encodeCBase58(book: number, chapter: number, verse: number): string {
+  const b = 100 + book;
+  const c = 1000 + chapter;
+  const v = 1000 + verse;
+
+  let f = b * 100000000 + c * 10000 + v;
+
+  let encoded = "";
+  while (f > 0) {
+    const rem = f % 58;
+    f = Math.floor(f / 58);
+    encoded = b58[rem] + encoded;
+  }
+
+  return encoded;
+}
+
+export function decodeCBase58(encoded: string): { book: number; chapter: number; verse: number } {
+  let num = 0;
+
+  for (let i = 0; i < encoded.length; i++) {
+    const index = b58.indexOf(encoded[i]);
+    if (index === -1) {
+      throw new Error(`Invalid Base58 character: ${encoded[i]}`);
+    }
+    num = num * 58 + index;
+  }
+
+  const v = num % 10000;
+  num = Math.floor(num / 10000);
+
+  const c = num % 10000;
+  num = Math.floor(num / 10000);
+
+  const b = num;
+
+  return {
+    book: b - 100,
+    chapter: c - 1000,
+    verse: v - 1000,
+  };
+}
+
+export function share(title: string, text: string, url: string) {
+  if (navigator.share) {
+    navigator.share({
+      title,
+      text,
+      url
+    })
+  } else {
+    navigator.clipboard.writeText(url).then(() => {
+      alert("Link copied to clipboard!");
+    })
+  }
+}

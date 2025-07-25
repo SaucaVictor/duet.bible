@@ -12,6 +12,7 @@ export function createStore() {
   const selectedHighlightVerse = ref(0);
   const selectedLang = ref('');
   const linkHighlight = ref(false);
+  const showOpacityAnimation = ref(false);
 
   const highlighted: Ref<{ [lang: string]: { [book: number]: { [chapter: number]: {[verseNumber: number]: [number, number]} } } }> = ref({});
   return {
@@ -24,7 +25,8 @@ export function createStore() {
     selectedHighlightVerse,
     highlighted,
     selectedLang,
-    linkHighlight
+    linkHighlight,
+    showOpacityAnimation
   };
 }
 

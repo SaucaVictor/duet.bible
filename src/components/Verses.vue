@@ -17,7 +17,9 @@
         class="verse-number"
         :style="{
           userSelect: 'none',
-          marginRight: '0.4rem'
+          marginRight: '0.4rem',
+          opacity: `${(verse.verse - 1) === selectedVerse ? 100 : onLoad}%`,
+          transition: 'all 0.5s ease',
         }"
       >
         {{ verse.verse }}.
@@ -25,9 +27,10 @@
       <span
         class="verse-text"
         :style="{
-          transition: 'all 0.2s ease',
+          transition: 'all 0.5s ease',
           backgroundColor: getColor(index),
           userSelect: 'none',
+          opacity: `${(verse.verse - 1) === selectedVerse ? 100 : onLoad}%`,
           cursor: 'pointer'
         }"
         @click="toggleVerse(index)"
@@ -46,12 +49,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useChapters, highlightColor } from "@/scripts/utils";
 import { useStore } from "@/store";
 
 const store = useStore();
-const { selectedVerse, selectVerse, selectedHighlightVerse, highlighted, selectedBook, selectedChapter, selectedLang } = store;
+const { selectedVerse, selectVerse, selectedHighlightVerse, highlighted, selectedBook, selectedChapter, selectedLang, showOpacityAnimation } = store;
 const { getVerses, getDisclaimer, getChapterName } = useChapters();
 
 const props = defineProps<{ lang: string }>();
@@ -79,12 +82,30 @@ function toggleVerse(index: number) {
 
 const verseSpans = ref<(HTMLDivElement | null)[]>([]);
 
-onMounted(()=>{
+const onLoad = ref(100);
+onMounted(() => {
+  if (showOpacityAnimation.value) {
+    onLoad.value = 50;
+  }
+  scrollToSelectedVerse();
+});
+
+watch(() => selectedVerse.value, () => {
+  scrollToSelectedVerse();
+});
+
+function scrollToSelectedVerse() {
   const el = verseSpans.value[selectedVerse.value];
   if (el) {
     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (showOpacityAnimation.value) {
+      onLoad.value = 50;
+      setTimeout(() => {
+        onLoad.value = 100;
+      }, 1200);
+    }
   }
-})
+}
 
 function getColor(index: number) {
   const langHighlights = highlighted.value[props.lang];

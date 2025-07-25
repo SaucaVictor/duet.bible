@@ -7,7 +7,6 @@
     >
       <Verses :lang="firstLang"/>
     </div>
-
     <div
       class="h-2 bg-[var(--chapters)] z-10 items-center flex justify-center gap-2"
     >
@@ -175,7 +174,7 @@
                 <touch-ripple :duration="200" class="overflow-hidden rounded-xl w-full h-full bg-[var(--chapters)]">
                   <div
                     class="bg-[var(--chapters)] flex items-center justify-center h-full min-w-full"
-                    @click="share"
+                    @click="share('📖🤩Check out duet.bible!', '', 'https://duetbible.web.app/')"
                   >
                     <i class="fa-solid fa-share-nodes"></i>
                   </div>
@@ -205,8 +204,9 @@
 
 <script setup lang="ts">
 import { onMounted, ref, watch, onUnmounted } from "vue";
+import { useRoute, useRouter } from 'vue-router'
 import { useStore, icons } from "@/store";
-import { useChapters, highlightColor } from '@/scripts/utils';
+import { useChapters, highlightColor, decodeCBase58, share } from '@/scripts/utils';
 import BottomSheet from '../components/BottomSheet.vue'
 import Verses from '@/components/Verses.vue';
 import { TouchRipple } from 'vue-touch-ripple';
@@ -215,7 +215,7 @@ import router from "@/router";
 
 const lock = ref(true);
 const wasColor = ref(0);
-const { selectedVerse, selectVerse, selectedHighlightVerse, highlighted, selectedBook, selectedChapter, selectedLang, linkHighlight } = useStore();
+const { selectedVerse, selectVerse, selectedHighlightVerse, highlighted, selectedBook, selectedChapter, selectedLang, linkHighlight, showOpacityAnimation } = useStore();
 const { firstLang, secondLang } = useStore();
 const { getChapterName, nextChapter, previousChapter, getVerse } = useChapters();
 const windowHeight = ref(window.innerHeight);
@@ -226,7 +226,7 @@ const scrollRef2 = ref<HTMLElement | null>(null);
 let isSyncingScroll = false;
 
 function onScroll(scrolledDiv: number) {
-  if (isSyncingScroll || !lock.value || selectedVerse.value) return;
+  if (isSyncingScroll || !lock.value) return;
 
   isSyncingScroll = true;
 
@@ -248,6 +248,20 @@ function swap() {
 }
 
 onMounted(() => {
+  const route = useRoute();
+  const router = useRouter();
+  let maybeVerse = route.params.verse;
+  
+  if (typeof maybeVerse === 'string') {
+    showOpacityAnimation.value = true;
+    router.replace({ path: '/' });
+    const { book, chapter, verse } = decodeCBase58(maybeVerse);
+    
+    selectedBook.value = book;
+    selectedChapter.value = chapter;
+    selectedVerse.value = verse;
+  }
+
   const updateHeight = () => {
     windowHeight.value = window.innerHeight;
   };
@@ -259,10 +273,6 @@ onMounted(() => {
   onUnmounted(() => {
     window.removeEventListener("resize", updateHeight);
   });
-
-  setTimeout(() => {
-    selectedVerse.value = 0;
-  }, 100);
 });
 
 function addHighlightWithLink(lang: string, book: number, chapter: number, verse: number, colorIndex: number){
@@ -364,21 +374,6 @@ watch(selectedChapter, (newVal) => {
   },
   { deep: true, immediate: true }
 )
-
-function share() {
-  const shareUrl = 'https://duetbible.web.app/';
-  if (navigator.share) {
-    navigator.share({
-      title: '📖🤩Check out duet.bible!',  
-      text: '',
-      url: shareUrl
-    })
-  } else {
-    navigator.clipboard.writeText(shareUrl).then(() => {
-      alert("Link copied to clipboard!");
-    })
-  }
-}
 </script>
 
 <style scoped>

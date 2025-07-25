@@ -9,8 +9,13 @@ const router = createRouter({
       component: main,
     },
     {
+      path: '/:verse',
+      name: 'verse',
+      component: main,
+    },
+    {
       path: '',
-      name: 'home',
+      name: 'home2',
       component: main,
     },
     {
