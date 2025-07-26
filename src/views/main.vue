@@ -1,11 +1,11 @@
 <template>
-  <div class="flex flex-col relative" :style="{ height: `${windowHeight}px` }">
+  <div class="flex flex-col relative select-none" :style="{ height: `${windowHeight}px` }">
     <div
       ref="scrollRef1"
       class="flex-1 overflow-y-scroll overflow-x-hidden"
       @scroll="onScroll(1)"
     >
-      <Verses :lang="firstLang"/>
+      <Verses :lang="firstLang" ptsafe :key="`${firstLang}-${selectedBook}-${selectedChapter}-${selectedVerse}`"/>
     </div>
     <div
       class="h-2 bg-[var(--chapters)] z-10 items-center flex justify-center gap-2"
@@ -34,7 +34,7 @@
       class="flex-1 overflow-y-scroll overflow-x-hidden"
       @scroll="onScroll(2)"
     >
-      <Verses :lang="secondLang"/>
+      <Verses :lang="secondLang" :key="`${secondLang}-${selectedBook}-${selectedChapter}-${selectedVerse}`"/>
     </div>
 
     <div class="flex w-full p-2 bg-[var(--bg)] chapters border-t border-t-[var(--chapters)] ">
@@ -86,7 +86,12 @@
       </div>
     </div>
 
-    <BottomSheet v-model="selectVerse">
+    <BottomSheet v-model="selectVerse" 
+      :extraButton="{
+        icon: 'fa-solid fa-share-nodes',
+        onClick: shareVerse
+      }"
+    >
       <h3 class="text-lg font-semibold pb-1">{{ getChapterName(linkHighlight ? firstLang : undefined) + ':' + (selectedHighlightVerse + 1) }}</h3>
       <span class="text-sm mt-3" :style="{
           transition: 'all 0.2s ease',
@@ -152,7 +157,7 @@ import 'vue-touch-ripple/style.css';
 const wasColor = ref(0);
 const { selectedVerse, selectVerse, selectedHighlightVerse, highlighted, selectedBook, selectedChapter, selectedLang, linkHighlight, showOpacityAnimation, lockedScroll } = useStore();
 const { firstLang, secondLang } = useStore();
-const { getChapterName, nextChapter, previousChapter, getVerse } = useChapters();
+const { getChapterName, nextChapter, previousChapter, getVerse, shareVerse } = useChapters();
 const windowHeight = ref(window.innerHeight);
 const settings = ref(false);
 
@@ -310,6 +315,7 @@ watch(selectedChapter, (newVal) => {
   },
   { deep: true, immediate: true }
 )
+
 </script>
 
 <style scoped>

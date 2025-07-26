@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-y-scroll pb-6 pt-[4rem]" :style="{ height: `${windowHeight}px` }">
+  <div class="overflow-y-scroll pb-6 pt-[4rem] select-none" :style="{ height: `${windowHeight}px` }">
     <div
       v-for="item in highlightedVerses"
       :key="`${item.book}-${item.chapter}-${item.verse}`"
@@ -7,8 +7,8 @@
       
       class="bg-[var(--saved)] m-2 rounded-lg p-2 overflow-y-scroll"
       :style="{
-            transition: 'all 0.2s ease',
-          }"
+        transition: 'all 0.2s ease',
+      }"
     >
       <div
         v-if="item.textFirstLang"
@@ -16,6 +16,7 @@
         @touchstart.stop="(e) => handleSwipeStart(e, `${item.lang}-${item.book}-${item.chapter}-${item.verse}-first`)"
         @touchmove="(e) => handleSwipeMove(e, `${item.lang}-${item.book}-${item.chapter}-${item.verse}-first`)"
         @touchend="() => handleSwipeEnd(`${item.lang}-${item.book}-${item.chapter}-${item.verse}-first`)"
+        
       >
         <div
           class="absolute top-0 left-0 right-0 bottom-0 flex items-center rounded-2xl overflow-hidden min-w-1.5 z-10"
@@ -45,16 +46,15 @@
         </div>
 
         <div
-          class="pl-2 pr-2 bg-[var(--saved)] ml-2 rounded-lg"
+          class="pl-2 pr-2 bg-[var(--saved)] ml-2 rounded-lg" 
           :style="{ transition: 'all 0.2s ease', paddingLeft: Math.min(swipeStates[`${item.lang}-${item.book}-${item.chapter}-${item.verse}-first`] + 7, DELETE_BOX_WIDTH)  + 'px' }"
         >
-          <div class="flex items-center">
+          <div class="flex items-center" @click="goToVerse(item.book, item.chapter, item.verse)">
             <div class="rounded-lg w-5 cursor-pointer justify-center items-center flex select-none">
               <img :src="icons[item.lang]" />
             </div>
             <div
               class="text-md font-bold pl-2 truncate"
-              @click="goToVerse(item.book, item.chapter, item.verse)"
             >
               {{ item.chapterNameFirst }} : {{ item.verse + 1 }}
             </div>
@@ -66,6 +66,9 @@
             class="text-sm pt-1.5 pr-1 break-words pl-2"
             v-html="item.textFirstLang"
           ></div>
+        </div>
+        <div class="absolute top-0 right-0.5 text-xs text-[var(--text-muted)]" @click="goToVerse(item.book, item.chapter, item.verse)">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i>
         </div>
       </div>
 
@@ -108,13 +111,12 @@
           class="pl-2 pr-2 bg-[var(--saved)] ml-2 rounded-lg"
           :style="{ transition: 'all 0.2s ease', paddingLeft: Math.min(swipeStates[`${secondLang}-${item.book}-${item.chapter}-${item.verse}-first`] + 7, DELETE_BOX_WIDTH)  + 'px' }"
         >
-          <div class="flex items-center">
+          <div class="flex items-center" @click="goToVerse(item.book, item.chapter, item.verse)">
             <div class="rounded-lg w-5 cursor-pointer justify-center items-center flex select-none">
               <img :src="icons[secondLang]" />
             </div>
             <div
               class="text-md font-bold pl-2 truncate"
-              @click="goToVerse(item.book, item.chapter, item.verse)"
             >
               {{ item.chapterNameSecond }} : {{ item.verse + 1 }}
             </div>
@@ -126,6 +128,9 @@
             class="text-sm pt-1.5 pr-1 break-words pl-2"
             v-html="item.textSecondLang"
           ></div>
+        </div>
+        <div class="absolute top-0 right-0.5 text-xs text-[var(--text-muted)]" v-if="!item.textFirstLang" @click="goToVerse(item.book, item.chapter, item.verse)">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i>
         </div>
       </div>
     </div>
@@ -295,6 +300,7 @@ const swipeStates = reactive<{ [key: string]: number }>({});
 const isTouchingMap = reactive<{ [key: string]: boolean }>({});
 const SWIPE_THRESHOLD = 40;
 const DELETE_BOX_WIDTH = 60;
+let wasSwiping = false;
 
 function handleSwipeStart(e: TouchEvent, key: string) {
   if (isTouchingMap[key]) return;
@@ -313,6 +319,7 @@ const swipeStartY: { [key: string]: number } = {};
 
 function handleSwipeMove(e: TouchEvent, key: string) {
   if (!isTouchingMap[key]) return;
+  wasSwiping = true;
 
   const deltaX = e.touches[0].clientX - swipeStartX[key];
   const deltaY = e.touches[0].clientY - swipeStartY[key];
@@ -324,14 +331,16 @@ function handleSwipeMove(e: TouchEvent, key: string) {
   }
 }
 
-
 function handleSwipeEnd(key: string) {
   if (!isTouchingMap[key]) return;
-
   isTouchingMap[key] = false;
+
+  setTimeout(() => {
+    wasSwiping = false;
+  }, 100);
+
   swipeStates[key] = swipeStates[key] > SWIPE_THRESHOLD / 2 ? SWIPE_THRESHOLD + 130 : 0;
 }
-
 
 watch(
   highlighted,
@@ -340,4 +349,10 @@ watch(
   },
   { deep: true, immediate: true }
 );
+
+function handleClick(item: typeof highlightedVerses.value[0]) {
+  if (!wasSwiping) {
+    goToVerse(item.book, item.chapter, item.verse);
+  }
+}
 </script>

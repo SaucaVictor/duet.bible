@@ -167,6 +167,11 @@ export function useChapters() {
     router.push('/');
   }
 
+  function shareVerse(){
+    const t = getChapterName() + ':' + (selectedHighlightVerse.value + 1);
+    const l = 'https://duetbible.web.app/' + encodeCBase58(selectedBook.value, selectedChapter.value, selectedHighlightVerse.value)
+    share(t, '', l);
+  }
   return {
     getChapterName,
     nextChapter,
@@ -176,7 +181,8 @@ export function useChapters() {
     getVersesLen,
     getVerse,
     getRandomVerse,
-    goToVerse
+    goToVerse,
+    shareVerse
   };
 }
 

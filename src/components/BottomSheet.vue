@@ -49,19 +49,20 @@
           >
             Close
           </button>
-          <div class="mt-4 ml-2">
-          <touch-ripple :duration="200" class="overflow-hidden rounded-lg">
-            <div v-if="!noShare"
-              @click="shareVerse"
-              class="rounded-lg font-medium transition-colors py-3 px-4.5"
-              :style="{ 
-                backgroundColor: 'var(--button-bg)', 
-                color: 'var(--button-text)' 
-              }"
-            >
-              <i class="fa-solid fa-share-nodes"></i>
-            </div>
-          </touch-ripple></div>
+          <div class="mt-4 ml-2" v-if="extraButton">
+            <touch-ripple :duration="200" class="overflow-hidden rounded-lg">
+              <div
+                @click="extraButton.onClick"
+                class="rounded-lg font-medium transition-colors py-3 px-4.5 cursor-pointer"
+                :style="{ 
+                  backgroundColor: 'var(--button-bg)', 
+                  color: 'var(--button-text)' 
+                }"
+              >
+                <i :class="extraButton.icon"></i>
+              </div>
+            </touch-ripple>
+          </div>
         </div>
       </div>
     </div>
@@ -70,13 +71,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue';
-import { useChapters, encodeCBase58, share } from '@/scripts/utils';
-import { useStore } from '@/store';
 import { TouchRipple } from 'vue-touch-ripple';
 import 'vue-touch-ripple/style.css';
-
-const { getChapterName } = useChapters();
-const { selectedBook, selectedChapter, selectedHighlightVerse } = useStore();
 
 const props = withDefaults(defineProps<{
   modelValue: boolean;
@@ -85,7 +81,10 @@ const props = withDefaults(defineProps<{
   full?: boolean;
   manualToggle?: boolean;
   z?: number;
-  noShare?: boolean;
+  extraButton?: {
+    icon: string;
+    onClick: () => void;
+  };
 }>(), {
   closeOnBackdrop: true,
   closeThreshold: 100
@@ -218,14 +217,6 @@ function preventTouchMove(event: TouchEvent) {
   if (props.modelValue) {
     event.preventDefault();
   }
-}
-
-
-
-function shareVerse(){
-  const t = getChapterName() + ':' + (selectedHighlightVerse.value + 1);
-  const l = 'https://duetbible.web.app/' + encodeCBase58(selectedBook.value, selectedChapter.value, selectedHighlightVerse.value)
-  share(t, '', l);
 }
 </script>
 

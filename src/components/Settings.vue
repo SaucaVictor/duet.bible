@@ -1,5 +1,5 @@
 <template>
-  <BottomSheet v-model="modelValue" full :manualToggle="manualClose" noShare>
+  <BottomSheet v-model="modelValue" full :manualToggle="manualClose">
     <div class="text-center text-5xl pt-6">
       <h6>duet.bible</h6>
     </div>
@@ -170,8 +170,14 @@
       </div>
     </div>
   </BottomSheet>
-  <BottomSheet v-model="random" :manual-toggle="manualClose" :z="50" noShare>
-    
+  <BottomSheet v-model="random" 
+    :manual-toggle="manualClose"
+    :z="50" 
+    :extraButton="{
+      icon: 'fa-solid fa-shuffle',
+      onClick: () => getRandomVerse()
+    }"
+  >
     <div
       class="pl-2 pr-2 bg-[var(--saved)] mt-3 rounded-lg py-1 select-none relative"
       @click="goToRandom()"
@@ -206,7 +212,7 @@
         v-html="getVerse(secondLang, randomVerse[0], randomVerse[1], randomVerse[2])"
       >
       </div>
-      <div class="absolute top-2 right-2 text-sm text-[var(--text-muted)]">
+      <div class="absolute top-2 right-2 text-xs text-[var(--text-muted)]">
         <i class="fa-solid fa-arrow-up-right-from-square"></i>
       </div>
     </div>
@@ -224,7 +230,7 @@ import { useRouter } from 'vue-router';
 import { useChapters } from '@/scripts/utils';
 const modelValue = defineModel<boolean>({ default: false })
 
-const { firstLang, secondLang, lockedScroll, randomVerse, selectedVerse } = useStore();
+const { firstLang, secondLang, lockedScroll, randomVerse } = useStore();
 const openLangChooser = ref(false);
 const { getRandomVerse, getVerse, goToVerse, getChapterName } = useChapters();
 

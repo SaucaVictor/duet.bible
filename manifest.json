@@ -5,6 +5,7 @@
   "display": "standalone",
   "theme_color": "#121212",
   "background_color": "#121212",
+  "scope": "/",
   "icons": [
       {
           "src": "https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/Jrijm6aKyuLMgrMZ6g3s/pub/pVMfDWapgIkNfyKNrJIL.png",

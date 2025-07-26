@@ -1,6 +1,6 @@
 <template>
   <div
-    class="pb-[1rem]"
+    class="pb-[1rem] select-none" :class="{ 'ptsafe': ptsafe }"
     :style="{ paddingInline: '0.75rem', lineHeight: '1.6' }"
   >
     <div class="text-center pt-7 pb-5 font-bold text-2xl">
@@ -57,7 +57,7 @@ const store = useStore();
 const { selectedVerse, selectVerse, selectedHighlightVerse, highlighted, selectedBook, selectedChapter, selectedLang, showOpacityAnimation } = store;
 const { getVerses, getDisclaimer, getChapterName } = useChapters();
 
-const props = defineProps<{ lang: string }>();
+const props = defineProps<{ lang: string; ptsafe?: boolean }>();
 
 const verses = computed(() => {
   const rawVerses = getVerses(props.lang) as string[];
@@ -123,3 +123,9 @@ function getColor(index: number) {
   return highlightColor[colorIndex] ?? 'transparent';
 }
 </script>
+
+<style scoped>
+.ptsafe {
+  padding-top: env(safe-area-inset-top);
+}
+</style>
