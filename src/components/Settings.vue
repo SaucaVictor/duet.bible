@@ -129,7 +129,7 @@
               </touch-ripple>
             </div>
           </div>
-          <div class="bg-[var(--chapters)] rounded-xl w-full mt-3 h-24">
+          <div class="bg-[var(--chapters)] rounded-xl w-full mt-3 h-23">
             <div class="rounded-lg cursor-pointer justify-center items-center flex select-none w-full h-full">
               <touch-ripple :duration="200" class="overflow-hidden rounded-xl w-full h-full">
                 <div
@@ -302,7 +302,7 @@ const installApp = async () => {
       '2. Tap "Add to Home Screen"'
     );
   } else {
-    alert('Install not available');
+    alert('Install not available / Already installed.');
   }
 }
 
