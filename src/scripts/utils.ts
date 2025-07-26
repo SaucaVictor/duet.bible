@@ -57,6 +57,7 @@ export function useChapters() {
   }
 
   function nextChapter() {
+    showOpacityAnimation.value = false;
     const booksLen = Chapters[firstLang.value].length;
     const chapterLen = Chapters[firstLang.value][selectedBook.value].chapters;
   
@@ -77,6 +78,8 @@ export function useChapters() {
   }
   
   function previousChapter() {
+    showOpacityAnimation.value = false;
+
     let prevChapter = selectedChapter.value - 1;
   
     if (prevChapter < 0) {
@@ -119,6 +122,7 @@ export function useChapters() {
         return 0;
     }
   }
+
   function scrollToTop() {
     window.scrollTo({
       top: 0,

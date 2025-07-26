@@ -85,9 +85,10 @@ const verseSpans = ref<(HTMLDivElement | null)[]>([]);
 const onLoad = ref(100);
 onMounted(() => {
   if (showOpacityAnimation.value) {
-    onLoad.value = 50;
+    scrollToSelectedVerse();
+  } else { 
+    onLoad.value = 100;
   }
-  scrollToSelectedVerse();
 });
 
 watch(() => selectedVerse.value, () => {
@@ -102,6 +103,7 @@ function scrollToSelectedVerse() {
       onLoad.value = 50;
       setTimeout(() => {
         onLoad.value = 100;
+        showOpacityAnimation.value = false;
       }, 1200);
     }
   }
@@ -127,5 +129,8 @@ function getColor(index: number) {
 <style scoped>
 .ptsafe {
   padding-top: env(safe-area-inset-top);
+}
+.pbsafe {
+  padding-bottom: env(safe-area-inset-bottom);
 }
 </style>

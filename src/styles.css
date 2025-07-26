@@ -41,3 +41,8 @@ html {
 wj {
   color: var(--j);
 }
+
+.ptsafe {
+  padding-top: env(safe-area-inset-top);
+}
+

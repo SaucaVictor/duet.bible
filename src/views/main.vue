@@ -2,8 +2,9 @@
   <div class="flex flex-col relative select-none" :style="{ height: `${windowHeight}px` }">
     <div
       ref="scrollRef1"
-      class="flex-1 overflow-y-scroll overflow-x-hidden"
+      class="flex-1 overflow-x-hidden"
       @scroll="onScroll(1)"
+      :class="[ !showOpacityAnimation ? 'overflow-y-scroll' : 'overflow-y-hidden' ]"
     >
       <Verses :lang="firstLang" ptsafe :key="`${firstLang}-${selectedBook}-${selectedChapter}-${selectedVerse}`"/>
     </div>
@@ -31,8 +32,9 @@
 
     <div
       ref="scrollRef2"
-      class="flex-1 overflow-y-scroll overflow-x-hidden"
+      class="flex-1 overflow-x-hidden"
       @scroll="onScroll(2)"
+      :class="[ !showOpacityAnimation ? 'overflow-y-scroll' : 'overflow-y-hidden' ]"
     >
       <Verses :lang="secondLang" :key="`${secondLang}-${selectedBook}-${selectedChapter}-${selectedVerse}`"/>
     </div>
@@ -108,33 +110,34 @@
           cursor: 'pointer'
         }" v-html="getVerse(secondLang)"></span>
       </div>
-
-      <div class="flex overflow-x-auto w-full pt-4 pb-6 items-center">
-        <div class="flex items-center h-full pr-3">
-          <touch-ripple :duration="200" class="overflow-hidden rounded-full">
-            <div
-              class="min-w-[3rem] flex items-center justify-center bg-[var(--chapters)] rounded-4xl aspect-square"
-              @click="() => { linkHighlight = !linkHighlight; if (linkHighlight) addHighlightWithLink(selectedLang, selectedBook, selectedChapter, selectedHighlightVerse, wasColor)}"
-            >
-              <i class="fa-solid fa-link" v-if="linkHighlight"></i>
-              <i class="fa-solid fa-link-slash" v-else></i>
-            </div>
-          </touch-ripple>
+      <template #bFixed>
+        <div class="flex overflow-x-auto w-full pt-4 pb-6 items-center">
+          <div class="flex items-center h-full pr-3">
+            <touch-ripple :duration="200" class="overflow-hidden rounded-full">
+              <div
+                class="min-w-[3rem] flex items-center justify-center bg-[var(--chapters)] rounded-4xl aspect-square"
+                @click="() => { linkHighlight = !linkHighlight; if (linkHighlight) addHighlightWithLink(selectedLang, selectedBook, selectedChapter, selectedHighlightVerse, wasColor)}"
+              >
+                <i class="fa-solid fa-link" v-if="linkHighlight"></i>
+                <i class="fa-solid fa-link-slash" v-else></i>
+              </div>
+            </touch-ripple>
+          </div>
+        <div
+            v-for="(color, index) in highlightColor"
+            :key="color"
+            class="flex-shrink-0 w-15 aspect-square rounded-2xl border-[0.1rem] mr-3"
+            :style="!index ? { backgroundColor: 'transparent' } : { backgroundColor: color }"
+            @click="addHighlightWithLink(selectedLang, selectedBook, selectedChapter, selectedHighlightVerse, index)"
+          >
+            <touch-ripple :duration="200" class="overflow-hidden rounded-2xl h-full">
+              <div class="w-full h-full flex items-center justify-center" v-if="!index">
+                <i class="fa-solid fa-xmark"></i>
+              </div>
+            </touch-ripple>
+          </div>
         </div>
-       <div
-          v-for="(color, index) in highlightColor"
-          :key="color"
-          class="flex-shrink-0 w-15 aspect-square rounded-2xl border-[0.1rem] mr-3"
-          :style="!index ? { backgroundColor: 'transparent' } : { backgroundColor: color }"
-          @click="addHighlightWithLink(selectedLang, selectedBook, selectedChapter, selectedHighlightVerse, index)"
-        >
-          <touch-ripple :duration="200" class="overflow-hidden rounded-2xl h-full">
-            <div class="w-full h-full flex items-center justify-center" v-if="!index">
-              <i class="fa-solid fa-xmark"></i>
-            </div>
-          </touch-ripple>
-        </div>
-      </div>
+      </template>
     </BottomSheet>
 
     <Settings v-model="settings"/>
@@ -157,7 +160,7 @@ import 'vue-touch-ripple/style.css';
 const wasColor = ref(0);
 const { selectedVerse, selectVerse, selectedHighlightVerse, highlighted, selectedBook, selectedChapter, selectedLang, linkHighlight, showOpacityAnimation, lockedScroll } = useStore();
 const { firstLang, secondLang } = useStore();
-const { getChapterName, nextChapter, previousChapter, getVerse, shareVerse } = useChapters();
+const { getChapterName, nextChapter, previousChapter, getVerse, shareVerse, goToVerse } = useChapters();
 const windowHeight = ref(window.innerHeight);
 const settings = ref(false);
 
@@ -166,21 +169,43 @@ const scrollRef1 = ref<HTMLElement | null>(null);
 const scrollRef2 = ref<HTMLElement | null>(null);
 let isSyncingScroll = false;
 
-function onScroll(scrolledDiv: number) {
-  if (isSyncingScroll || !lockedScroll.value) return;
+let activeScroll = ref<1 | 2 | null>(null);
+let lastScrollTop = ref(0);
+let scrollFrame: number | null = null;
 
-  isSyncingScroll = true;
+function syncScroll(scrolledDiv: 1 | 2) {
+  if (!lockedScroll.value || !scrollRef1.value || !scrollRef2.value || showOpacityAnimation.value) return;
 
-  if (scrolledDiv === 1 && scrollRef1.value && scrollRef2.value) {
-    scrollRef2.value.scrollTop = scrollRef1.value.scrollTop;
-  } else if (scrolledDiv === 2 && scrollRef1.value && scrollRef2.value) {
-    scrollRef1.value.scrollTop = scrollRef2.value.scrollTop;
+  const source = scrolledDiv === 1 ? scrollRef1.value : scrollRef2.value;
+  const target = scrolledDiv === 1 ? scrollRef2.value : scrollRef1.value;
+
+  const scrollTop = source.scrollTop;
+
+  if (Math.abs(scrollTop - lastScrollTop.value) > 1) {
+    lastScrollTop.value = scrollTop;
+    if (target.scrollTop !== scrollTop) {
+      target.scrollTop = scrollTop;
+    }
   }
 
-  requestAnimationFrame(() => {
-    isSyncingScroll = false;
-  });
+  if (scrollFrame) cancelAnimationFrame(scrollFrame);
+  scrollFrame = requestAnimationFrame(() => syncScroll(scrolledDiv));
 }
+
+function onScroll(scrolledDiv: number) {
+  if (!lockedScroll.value) return;
+
+  if (activeScroll.value !== scrolledDiv) {
+    activeScroll.value = scrolledDiv as 1 | 2;
+    syncScroll(scrolledDiv as 1 | 2);
+
+    setTimeout(() => {
+      activeScroll.value = null;
+      if (scrollFrame) cancelAnimationFrame(scrollFrame);
+    }, 150);
+  }
+}
+
 
 function swap() {
   const l = firstLang.value;
@@ -194,13 +219,10 @@ onMounted(() => {
   let maybeVerse = route.params.verse;
   
   if (typeof maybeVerse === 'string') {
-    showOpacityAnimation.value = true;
     router.replace({ path: '/' });
     const { book, chapter, verse } = decodeCBase58(maybeVerse);
     
-    selectedBook.value = book;
-    selectedChapter.value = chapter;
-    selectedVerse.value = verse;
+    goToVerse(book, chapter, verse);
   }
 
   const updateHeight = () => {

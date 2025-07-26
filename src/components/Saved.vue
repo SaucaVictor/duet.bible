@@ -1,11 +1,12 @@
 <template>
-  <div class="overflow-y-scroll pb-6 pt-[4rem] select-none" :style="{ height: `${windowHeight}px` }">
+  <Navbar toHome />
+  <div class="overflow-y-scroll pb-[6rem] select-none" :style="{ height: `${windowHeight}px` }">
     <div
       v-for="item in highlightedVerses"
       :key="`${item.book}-${item.chapter}-${item.verse}`"
       style="margin-bottom: 1rem;"
       
-      class="bg-[var(--saved)] m-2 rounded-lg p-2 overflow-y-scroll"
+      class="bg-[var(--saved)] mx-2 rounded-lg p-2 overflow-y-scroll"
       :style="{
         transition: 'all 0.2s ease',
       }"
@@ -147,19 +148,6 @@
       </div>
     </div>
   </div>
-  
-  <div class="fixed top-0 pt-3 w-full flex justify-between bg-[var(--bg)] z-999">
-    <touch-ripple :duration="200" class="overflow-hidden rounded-full mx-3 mb-2">
-      <div class="flex items-center h-full">
-        <div
-          class="min-w-[3rem] flex items-center justify-center bg-[var(--chapters)] rounded-4xl aspect-square"
-          @click="() => { showOpacityAnimation = false; selectedVerse = 0; router.push('/'); }"
-        >
-          <i class="fa-solid fa-angle-left text-xl"></i>
-        </div>
-      </div>
-    </touch-ripple>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -169,6 +157,7 @@ import { useChapters, highlightColor, formatTimeAgo } from '@/scripts/utils';
 import router from '@/router';
 import { TouchRipple } from 'vue-touch-ripple';
 import 'vue-touch-ripple/style.css';
+import Navbar from './Navbar.vue';
 
 const { highlighted, firstLang, secondLang, selectedBook, selectedChapter, selectedVerse, showOpacityAnimation } = useStore();
 const { getVerse, getChapterName, goToVerse } = useChapters();
@@ -349,10 +338,4 @@ watch(
   },
   { deep: true, immediate: true }
 );
-
-function handleClick(item: typeof highlightedVerses.value[0]) {
-  if (!wasSwiping) {
-    goToVerse(item.book, item.chapter, item.verse);
-  }
-}
 </script>

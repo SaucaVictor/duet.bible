@@ -14,8 +14,8 @@
       v-if="modelValue"
       ref="sheet"
       class="fixed bottom-0 inset-x-0 rounded-t-2xl shadow-xl z-50 touch-pan-y"
-      :class="{ 'transition-transform duration-300 ease-out': !dragging || isEntering }"
-      :style="{ transform: `translateY(${translateY}px)`, backgroundColor: 'var(--sheet-bg)',  height: full ? `${windowHeight}px` : '' }"
+      :class="{ 'transition-transform duration-300 ease-out': !dragging || isEntering}"
+      :style="{ transform: `translateY(${translateY}px)`, backgroundColor: 'var(--sheet-bg)',  height: full ? `${windowHeight}px` : '', maxHeight: `${windowHeight}px`}"
       @touchstart="onTouchStart"
       @touchmove="onTouchMove"
       @touchend="onTouchEnd"
@@ -26,22 +26,16 @@
       </div>
 
       <div class="px-6 pb-6">
-        <slot>
-          <p class="text-center py-8" :style="{ color: 'var(--text-muted)' }">
-            No content provided.
-          </p>
-        </slot>
-        <div
-          class="overflow-y-auto max-h-[60vh] -mx-6 px-6 mb-4"
-          @touchmove.stop
-          @wheel.stop
-        >
-          <slot name="scrollable" ></slot>
+        <div class="overflow-y-auto" ref="defaultSlotContainer" :style="{ maxHeight: `${scrollAreaMaxHeight - 60}px` }">
+          <slot></slot>
         </div>
-        <div class="flex">
+        <div ref="bFixedSlot">
+          <slot name="bFixed"></slot>
+        </div>
+        <div class="flex pt-1" ref="buttons">
           <button v-if="!full"
             @click="close"
-            class="mt-4 w-full py-3 px-4 rounded-lg font-medium transition-colors"
+            class=" w-full py-3 px-4 rounded-lg font-medium transition-colors"
             :style="{ 
               backgroundColor: 'var(--button-bg)', 
               color: 'var(--button-text)' 
@@ -49,7 +43,7 @@
           >
             Close
           </button>
-          <div class="mt-4 ml-2" v-if="extraButton">
+          <div class="mt-0 ml-2" v-if="extraButton">
             <touch-ripple :duration="200" class="overflow-hidden rounded-lg">
               <div
                 @click="extraButton.onClick"
@@ -67,10 +61,11 @@
       </div>
     </div>
   </transition>
+  <div ref="safeAreaProbe" class="safe-area-probe hidden fixed top-0"></div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch } from 'vue';
+import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue';
 import { TouchRipple } from 'vue-touch-ripple';
 import 'vue-touch-ripple/style.css';
 
@@ -101,10 +96,34 @@ const isEntering = ref(false)
 const dragging = ref(false)
 const startX = ref(0)
 const windowHeight = ref(window.innerHeight * 0.95);
+const safeAreaProbe = ref<HTMLElement | null>(null);
+const safeAreaTop = ref(0);
+const defaultSlotContainer = ref<HTMLElement | null>(null);
+const bFixedSlot = ref<HTMLElement | null>(null);
+const buttons = ref<HTMLElement | null>(null);
+const scrollAreaMaxHeight = ref<number>(0);
+
+async function updateScrollAreaHeight() {
+  await nextTick();
+  const fixedHeight = 
+    (bFixedSlot.value?.offsetHeight || 0) +
+    (buttons.value?.offsetHeight || 0);
+
+  scrollAreaMaxHeight.value = windowHeight.value - fixedHeight;
+}
+
+function isScrollAtTop(): boolean {
+  return defaultSlotContainer.value?.scrollTop === 0;
+}
 
 function onTouchStart(event: TouchEvent) {
-  if (!props.modelValue || isEntering.value) return
-  //preventTouchMove(event);
+  if (!props.modelValue || isEntering.value) return;
+
+  if (!isScrollAtTop()) {
+    dragging.value = false;
+    return;
+  }
+
   dragging.value = true
   startY.value = event.touches[0].clientY
   startX.value = event.touches[0].clientX
@@ -128,7 +147,8 @@ function onTouchMove(event: TouchEvent) {
   }
 
   if (deltaY > 0) {
-    translateY.value = deltaY
+    preventTouchMove(event);
+    translateY.value = deltaY;
   }
 }
 
@@ -170,14 +190,22 @@ function handleKeydown(event: KeyboardEvent) {
 }
 
 onMounted(() => {
+  if (safeAreaProbe.value) {
+    const computed = window.getComputedStyle(safeAreaProbe.value);
+    const paddingTop = computed.paddingTop;
+    safeAreaTop.value = parseFloat(paddingTop) || 0;
+  }
+
   document.addEventListener('keydown', handleKeydown);
   const updateHeight = () => {
-    windowHeight.value = window.innerHeight * 0.95;
+    windowHeight.value = window.innerHeight * 0.95 - safeAreaTop.value;
+    updateScrollAreaHeight();
   };
 
   window.addEventListener("resize", updateHeight);
 
   updateHeight();
+
 
   onUnmounted(() => {
     window.removeEventListener("resize", updateHeight);
@@ -189,22 +217,30 @@ onMounted(() => {
 watch(() => props.modelValue, (isOpen) => {
   try {
     if (isOpen) {
-      document.body.style.overflow = 'hidden'
-      isEntering.value = true
+      document.body.style.overflow = 'hidden';
 
-      translateY.value = props.full ? windowHeight.value : (sheet.value?.offsetHeight || 400)
+      isEntering.value = true;
+
+      translateY.value = props.full ? windowHeight.value : (sheet.value?.offsetHeight || 400);
 
       setTimeout(() => {
-        translateY.value = 0
+        translateY.value = 0;
         setTimeout(() => {
-          isEntering.value = false
-        }, 300)
-      }, 50)
+          isEntering.value = false;
+        }, 300);
+      }, 50);
     } else {
       document.body.style.overflow = ''
-      isEntering.value = false
+      isEntering.value = false;
     }
   } catch (_) {}
+});
+
+watch(() => props.modelValue, async (isOpen) => {
+  if (isOpen) {
+    await nextTick();
+    await updateScrollAreaHeight();
+  }
 });
 
 watch(() => props.manualToggle, (newV, oldV) => {
@@ -243,5 +279,10 @@ function preventTouchMove(event: TouchEvent) {
 
 .touch-pan-y {
   touch-action: pan-y;
+}
+
+.safe-area-probe {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 </style>

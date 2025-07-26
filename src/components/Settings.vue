@@ -5,7 +5,7 @@
     </div>
     <div
       class="justify-center h-full transition-all duration-300 ease-in-out mt-10"
-      :class="{ 'flex overflow-hidden': !openLangChooser, 'max-sm:flex-col sm:flex': openLangChooser }"
+      :class="{ 'flex overflow-hidden': !openLangChooser, 'flex-col': openLangChooser }"
     >
       <div :class="{'flex': openLangChooser}">
         <div
@@ -87,7 +87,7 @@
       </div>
       <div
         class="w-full transition-all duration-300 ease-in-out flex"
-        :class="{ 'ml-3': !openLangChooser, 'mt-3 sm:ml-3': openLangChooser }"
+        :class="{ 'ml-3': !openLangChooser, 'mt-3': openLangChooser }"
       >
         <div v-if="openLangChooser" class="pr-3 min-h-full">
           <div

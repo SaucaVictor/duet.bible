@@ -1,6 +1,27 @@
 <template>
+  <Navbar 
+    right-icon="fa-solid fa-arrow-down-a-z"
+    :rb-click="toggleSort"
+    :lb-click="() => { if (openVerses) openVerses = false; else { store.showOpacityAnimation.value = false; router.back(); } }"
+  >
+    <div>
+      <touch-ripple :duration="200" class="overflow-hidden rounded-full w-full"v-if="!openVerses">
+        <div class="rounded-4xl bg-[var(--chapters)] flex items-center pr-4">
+          <div class="min-w-[3.5rem] flex items-center justify-center">
+            <i class="fa-solid fa-search"></i>
+          </div>
+          <input
+            type="text"
+            v-model="searchTerm"
+            placeholder="Search"
+            class="w-full py-3.5 focus:outline-none h-full"
+          />
+        </div>
+      </touch-ripple>
+    </div>
+  </Navbar>
   <Transition name="pop" v-if="visible">
-    <div v-if="!openVerses" class="p-4 h-full flex flex-col w-full" id="chapters">
+    <div v-if="!openVerses" class="px-4 pb-6 h-full flex flex-col w-full fixed">
       <div class="overflow-y-auto flex-grow pb-[4rem] mb-0.2">
         <div
           v-for="(book, index) in filteredBooks"
@@ -38,10 +59,9 @@
         </div>
       </div>
     </div>
-
-    <div v-else id="verses" class="w-full px-4 pb-20 overflow-auto max-h-[calc(100vh-3.5rem)]">
-      <Transition name="expand">
-        <div>
+    <Transition name="expand" v-else>
+      <div class="px-4 pb-6 h-full flex flex-col w-full fixed" >
+        <div class="overflow-y-auto flex-grow pb-[4rem] mb-0.2">
           <div class="text-center pb-3 font-bold text-2xl">
             {{ getChapterName(store.firstLang.value) }}
           </div>
@@ -60,45 +80,9 @@
             </button>
           </div>
         </div>
-      </Transition>
-    </div>
+      </div>
+    </Transition>
   </Transition>
-
-  <div class="fixed top-2 pt-2 w-full bg-inherit flex justify-between">
-    <touch-ripple :duration="200" class="overflow-hidden rounded-full mx-3">
-      <div class="flex items-center h-full">
-        <div
-          class="min-w-[3rem] flex items-center justify-center bg-[var(--chapters)] rounded-4xl aspect-square"
-          @click="() => { if (openVerses) openVerses = false; else { router.push('/'), store.showOpacityAnimation.value = false; } }"
-        >
-          <i class="fa-solid fa-angle-left text-xl"></i>
-        </div>
-      </div>
-    </touch-ripple>
-    <touch-ripple :duration="200" class="overflow-hidden rounded-full w-full max-w-[calc(100%-9rem)]"v-if="!openVerses">
-      <div class="rounded-4xl bg-[var(--chapters)] flex items-center pr-4">
-        <div class="min-w-[3.5rem] flex items-center justify-center">
-          <i class="fa-solid fa-search"></i>
-        </div>
-        <input
-          type="text"
-          v-model="searchTerm"
-          placeholder="Search"
-          class="w-full py-3.5 focus:outline-none h-full"
-        />
-      </div>
-    </touch-ripple>
-    <touch-ripple :duration="200" class="overflow-hidden rounded-full mx-3" v-if="!openVerses">
-      <div class="flex items-center h-full">
-        <div
-          class="min-w-[3rem] flex items-center justify-center bg-[var(--chapters)] rounded-4xl aspect-square"
-          @click="toggleSort"
-        >
-          <i class="fa-solid fa-arrow-down-a-z text-xl"></i>
-        </div>
-      </div>
-    </touch-ripple>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -109,6 +93,7 @@ import router from "@/router";
 import { useChapters } from "@/scripts/utils";
 import { TouchRipple } from 'vue-touch-ripple';
 import 'vue-touch-ripple/style.css';
+import Navbar from "./Navbar.vue";
 
 interface BookChapterCounts {
   [lang: string]: {
@@ -229,17 +214,6 @@ function toggleSort() {
 .expand-leave-from {
   max-height: 1500px;
   opacity: 1;
-}
-
-#chapters {
-  position: fixed;
-  top: 3.5rem;
-  scroll-margin-top: 60px;
-}
-#verses {
-  position: fixed;
-  top: 4.5rem;
-  scroll-margin-top: 60px;
 }
 
 .pop-enter-active,
