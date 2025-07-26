@@ -4,21 +4,22 @@
       <h6>duet.bible</h6>
     </div>
     <div
-      class="justify-center h-full transition-all duration-300 ease-in-out mt-10"
+      class="justify-center h-full transition-all duration-300 ease-in-out mt-10 overflow-hidden"
       :class="{ 'flex overflow-hidden': !openLangChooser, 'flex-col': openLangChooser }"
     >
       <div :class="{'flex': openLangChooser}">
         <div
-          class="bg-[var(--chapters)] rounded-xl flex items-center transition-all duration-300 ease-in-out justify-center"
+          class="bg-[var(--chapters)] rounded-xl relative flex items-center transition-all duration-300 ease-in-out justify-center"
         >
-          <div class="p-3.5 flex flex-col items-center">
-            <touch-ripple :duration="200" class="overflow-hidden rounded-md ">
+          <div class="p-3.5 flex flex-col items-center relative">
+            <touch-ripple :duration="200" class="overflow-hidden rounded-md">
               <div
-                class="rounded-lg w-16 cursor-pointer h-10 justify-center items-center flex select-none bg-amber-200"
+                class="rounded-lg w-16 cursor-pointer h-10 justify-center items-center flex select-none transition-opacity duration-300 ease-in-out"
+                :style="{ opacity: showVerses1stLang ? '100%' : '30%' }"
                 @click="openLangChooser = !openLangChooser"
-              >
-                <img :src="icons[firstLang]" class="h-16" />
-              </div>
+                >
+              <img :src="icons[firstLang]" class="h-16" />
+            </div>
             </touch-ripple>
             <div class="flex items-center justify-center py-1">
               <touch-ripple :duration="200" class="overflow-hidden rounded-full">
@@ -30,9 +31,10 @@
                 </div>
               </touch-ripple>
             </div>
-            <touch-ripple :duration="200" class="overflow-hidden rounded-md ">
+            <touch-ripple :duration="200" class="overflow-hidden relative rounded-md ">
               <div
-                class="rounded-lg w-16 cursor-pointer h-10 justify-center items-center flex select-none bg-amber-200"
+                class="rounded-lg w-16 cursor-pointer h-10 justify-center items-center flex select-none transition-opacity duration-300 ease-in-out"
+                :style="{ opacity: showVerses2stLang ? '100%' : '30%' }"
                 @click="openLangChooser = !openLangChooser"
               >
                 <img :src="icons[secondLang]" class="h-16" />
@@ -45,14 +47,14 @@
           <div
             class="bg-[var(--chapters)] rounded-xl flex flex-col items-center transition-all duration-300 ease-in-out w-full h-full justify-center"
           >
-            <div class="flex overflow-x-auto overflow-y-hidden flex-nowrap">
+            <div class="relative flex items-center justify-center overflow-x-auto overflow-y-hidden w-full ">
               <div
                 v-for="lang in availableLang"
                 :key="lang"
               >
                 <touch-ripple :duration="200" class="overflow-hidden rounded-md ">
                   <div
-                    class="rounded-lg w-16 cursor-pointer h-10 justify-center items-center flex select-none bg-amber-200"
+                    class="rounded-lg w-16 cursor-pointer h-10 justify-center items-center flex select-none"
                     @click="firstLang = lang"
                   >
                     <img :src="icons[lang]" class="h-16" />
@@ -67,7 +69,7 @@
                 </div>
               </touch-ripple>
             </div>
-            <div class="flex overflow-x-auto overflow-y-hidden flex-nowrap">
+            <div class="relative flex items-center justify-center overflow-x-auto overflow-y-hidden w-full ">
               <div
                 v-for="lang in availableLang"
                 :key="lang"
@@ -75,12 +77,38 @@
                 <touch-ripple :duration="200" class="overflow-hidden rounded-md ">
                   <div
                     class="rounded-lg w-16 cursor-pointer h-10 justify-center items-center flex select-none bg-amber-200"
-                    @click="firstLang = lang"
+                    @click="secondLang = lang"
                   >
                     <img :src="icons[lang]" class="h-16" />
                   </div>
                 </touch-ripple>
               </div>
+            </div>
+          </div>
+        </div>
+        <div :class="{ 'w-0 overflow-hidden h-0': !openLangChooser, 'ml-3 h-auto overflow-hidden': openLangChooser }">
+          <div class="bg-[var(--chapters)] rounded-xl overflow-hidden relative flex flex-col items-center transition-all duration-100 ease-in-out h-full justify-center">
+            <div class="relative top-0 bottom-0 h-full w-full min-w-36">
+              <touch-ripple :duration="200" class="overflow-hidden rounded-t-xl h-full w-full">
+                <div
+                  class="bg-[var(--chapters)] flex items-start justify-center pt-6 w-full h-full"
+                  @click="showVerses1stLang = !showVerses1stLang"
+                >
+                  <i class="fa-solid fa-eye" v-if="showVerses1stLang"></i>
+                  <i class="fa-solid fa-eye-slash" v-else></i>
+                </div>
+              </touch-ripple>
+            </div>
+            <div class="relative top-0 bottom-0 h-full w-full min-w-12">
+              <touch-ripple :duration="200" class="overflow-hidden rounded-b-xl h-full w-full">
+                <div
+                  class="bg-[var(--chapters)] flex justify-center items-end pb-6 h-full w-full"
+                  @click="showVerses2stLang = !showVerses2stLang"
+                >
+                  <i class="fa-solid fa-eye" v-if="showVerses2stLang"></i>
+                  <i class="fa-solid fa-eye-slash" v-else></i>
+                </div>
+              </touch-ripple>
             </div>
           </div>
         </div>
@@ -230,7 +258,7 @@ import { useRouter } from 'vue-router';
 import { useChapters } from '@/scripts/utils';
 const modelValue = defineModel<boolean>({ default: false })
 
-const { firstLang, secondLang, lockedScroll, randomVerse } = useStore();
+const { firstLang, secondLang, lockedScroll, randomVerse, showVerses1stLang, showVerses2stLang } = useStore();
 const openLangChooser = ref(false);
 const { getRandomVerse, getVerse, goToVerse, getChapterName } = useChapters();
 
@@ -259,6 +287,14 @@ watch(secondLang, (newVal) => {
 watch(modelValue, () => {
   openLangChooser.value = false;   
 });
+
+watch(showVerses1stLang, (newVal) => {
+  localStorage.setItem('showVerses1stLang', JSON.stringify(newVal));
+}, { immediate: true });
+
+watch(showVerses2stLang, (newVal) => {
+  localStorage.setItem('showVerses2stLang', JSON.stringify(newVal));
+}, { immediate: true });
 
 interface BeforeInstallPromptEvent extends Event {
     prompt: () => Promise<void>;

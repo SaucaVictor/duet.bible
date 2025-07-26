@@ -26,7 +26,7 @@
       </div>
 
       <div class="px-6 pb-6">
-        <div class="overflow-y-auto" ref="defaultSlotContainer" :style="{ maxHeight: `${scrollAreaMaxHeight - 60}px` }">
+        <div class="overflow-y-auto pb-4" ref="defaultSlotContainer" :style="{ maxHeight: `${scrollAreaMaxHeight - 76}px` }">
           <slot></slot>
         </div>
         <div ref="bFixedSlot">

@@ -5,10 +5,11 @@
       class="flex-1 overflow-x-hidden"
       @scroll="onScroll(1)"
       :class="[ !showOpacityAnimation ? 'overflow-y-scroll' : 'overflow-y-hidden' ]"
+      v-if="showVerses1stLang"
     >
       <Verses :lang="firstLang" ptsafe :key="`${firstLang}-${selectedBook}-${selectedChapter}-${selectedVerse}`"/>
     </div>
-    <div
+    <div v-if="showVerses1stLang && showVerses2stLang"
       class="h-2 bg-[var(--chapters)] z-10 items-center flex justify-center gap-2"
     >
       <touch-ripple :duration="200" class="overflow-hidden rounded-full">
@@ -35,8 +36,21 @@
       class="flex-1 overflow-x-hidden"
       @scroll="onScroll(2)"
       :class="[ !showOpacityAnimation ? 'overflow-y-scroll' : 'overflow-y-hidden' ]"
+      v-if="showVerses2stLang"
     >
-      <Verses :lang="secondLang" :key="`${secondLang}-${selectedBook}-${selectedChapter}-${selectedVerse}`"/>
+      <Verses :lang="secondLang" :ptsafe="showVerses2stLang && !showVerses1stLang" :key="`${secondLang}-${selectedBook}-${selectedChapter}-${selectedVerse}`"/>
+    </div>
+    <div v-if="!showVerses1stLang && !showVerses2stLang" class="flex justify-center items-center w-full text-center h-full">
+      <div>
+        <h6 class=" text-8xl opacity-40">db</h6>
+        <div class="border border-white/20 rounded-full mt-2">
+          <touch-ripple :duration="200" class="overflow-hidden rounded-full h-full w-full">
+            <div class="opacity-40 py-2.5 text-sm" @click="() => { showVerses1stLang = true; showVerses2stLang = true; }">
+              <i class="fa-solid fa-eye"></i>
+            </div>
+          </touch-ripple>
+        </div>
+      </div>
     </div>
 
     <div class="flex w-full p-2 bg-[var(--bg)] chapters border-t border-t-[var(--chapters)] ">
@@ -158,7 +172,19 @@ import 'vue-touch-ripple/style.css';
 
 
 const wasColor = ref(0);
-const { selectedVerse, selectVerse, selectedHighlightVerse, highlighted, selectedBook, selectedChapter, selectedLang, linkHighlight, showOpacityAnimation, lockedScroll } = useStore();
+const { selectedVerse,
+  selectVerse,
+  selectedHighlightVerse,
+  highlighted,
+  selectedBook,
+  selectedChapter,
+  selectedLang,
+  linkHighlight,
+  showOpacityAnimation,
+  lockedScroll,
+  showVerses1stLang,
+  showVerses2stLang
+} = useStore();
 const { firstLang, secondLang } = useStore();
 const { getChapterName, nextChapter, previousChapter, getVerse, shareVerse, goToVerse } = useChapters();
 const windowHeight = ref(window.innerHeight);

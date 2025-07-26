@@ -23,4 +23,9 @@ function loadLang(key: string, fallback: string) {
 
 store.firstLang.value = loadLang('firstLang', 'ro');
 store.secondLang.value = loadLang('secondLang', 'no');
+
+const sv1 = localStorage.getItem('showVerses1stLang');
+const sv2 = localStorage.getItem('showVerses2stLang');
+store.showVerses1stLang.value = sv1 ? JSON.parse(sv1) : true;
+store.showVerses2stLang.value = sv2 ? JSON.parse(sv2) : true;
 </script>
