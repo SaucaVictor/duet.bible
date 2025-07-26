@@ -3,9 +3,10 @@
     right-icon="fa-solid fa-arrow-down-a-z"
     :rb-click="toggleSort"
     :lb-click="() => { if (openVerses) openVerses = false; else { store.showOpacityAnimation.value = false; router.back(); } }"
+    :rb="!openVerses"
   >
     <div>
-      <touch-ripple :duration="200" class="overflow-hidden rounded-full w-full"v-if="!openVerses">
+      <touch-ripple :duration="200" class="overflow-hidden rounded-full w-full" v-if="!openVerses">
         <div class="rounded-4xl bg-[var(--chapters)] flex items-center pr-4">
           <div class="min-w-[3.5rem] flex items-center justify-center">
             <i class="fa-solid fa-search"></i>

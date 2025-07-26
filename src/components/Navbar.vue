@@ -17,8 +17,7 @@
       <div class="w-full" :class="{ 'mr-3': !rightIcon && !centerWNoRB }">
         <slot />
       </div>
-      
-      <div class="mx-3" v-if="centerWNoRB ? centerWNoRB : rb ? rb : rightIcon" :class="{ 'min-w-[3rem] max-w-[3rem]': centerWNoRB }">
+      <div class="mx-3" v-if="centerWNoRB ? centerWNoRB : rb !== undefined ? rb : rightIcon" :class="{ 'min-w-[3rem] max-w-[3rem]': centerWNoRB }">
         <touch-ripple :duration="200" class="overflow-hidden rounded-full" v-if="!centerWNoRB">
           <div class="flex items-center h-full">
             <div
