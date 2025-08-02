@@ -139,6 +139,7 @@
               <touch-ripple :duration="200" class="overflow-hidden rounded-xl w-full bg-[var(--chapters)]">
                 <div
                   class="bg-[var(--chapters)] flex items-center justify-center aspect-square"
+                  :class="{ 'opacity-30': !showVerses1stLang || !showVerses2stLang }"
                   @click="lockedScroll = !lockedScroll"
                 >
                   <i class="fa-solid fa-lock" v-if="lockedScroll"></i>

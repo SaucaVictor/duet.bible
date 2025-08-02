@@ -17,14 +17,15 @@
       <div class="w-full" :class="{ 'mr-3': !rightIcon && !centerWNoRB }">
         <slot />
       </div>
-      <div class="mx-3" v-if="centerWNoRB ? centerWNoRB : rb !== undefined ? rb : rightIcon" :class="{ 'min-w-[3rem] max-w-[3rem]': centerWNoRB }">
+      <div class="mx-3" v-if="(centerWNoRB ? centerWNoRB : rb !== undefined ? rb : rightIcon) || slotRb" :class="{ 'min-w-[3rem] max-w-[3rem]': centerWNoRB }">
         <touch-ripple :duration="200" class="overflow-hidden rounded-full" v-if="!centerWNoRB">
           <div class="flex items-center h-full">
             <div
-              class="w-[3rem] flex items-center justify-center bg-[var(--chapters)] rounded-full aspect-square"
+              class="w-[3rem] h-[3rem] max-w-[3rem] max-h-[3rem] flex items-center justify-center bg-[var(--chapters)] rounded-full aspect-square"
               @click="rbClick?.()"
             >
-              <i :class="rightIcon" class="text-xl"></i>
+              <slot v-if="slotRb" name="slotRb"></slot>
+              <i v-else :class="rightIcon" class="text-xl"></i>
             </div>
           </div>
         </touch-ripple>
@@ -48,7 +49,8 @@ const props = withDefaults(defineProps<{
   rb?: boolean,
   centerWNoRB?: boolean,
   toHome?: boolean,
-  toCustom?: string
+  toCustom?: string,
+  slotRb?: boolean
 }>(), {
   lb: true,
   leftIcon: 'fa-solid fa-angle-left',
