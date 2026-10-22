@@ -1,6 +1,6 @@
 <template>
   <Navbar 
-    right-icon="fa-solid fa-arrow-down-a-z"
+    :right-icon="sortAlphabetically ? 'fa-solid fa-book' : 'fa-solid fa-arrow-down-a-z'"
     :rb-click="toggleSort"
     :lb-click="handleBack"
     :rb="!isVerseView"
@@ -53,7 +53,7 @@
                 :key="chapter"
                 class="rounded-md text-center aspect-square transition-colors"
                 :class="chapter - 1 === store.selectedChapter.value && book.original === store.selectedBook.value
-                  ? 'bg-white text-black font-bold ring-2 ring-white/50'
+                  ? 'bg-[var(--chapters)] font-bold ring-1 ring-white/40'
                   : 'bg-[var(--chapters)] text-white'"
                 @click="selectChapter(book.original, chapter - 1)"
               >
@@ -288,6 +288,9 @@ function choose(verse: number) {
 
 function toggleSort() {
   sortAlphabetically.value = !sortAlphabetically.value;
+  nextTick(() => {
+    scrollToBook(expandedBookIndex.value || 0);
+  });
 }
 
 function handleBack() {
