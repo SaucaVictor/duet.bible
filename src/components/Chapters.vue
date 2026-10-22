@@ -2,11 +2,11 @@
   <Navbar 
     right-icon="fa-solid fa-arrow-down-a-z"
     :rb-click="toggleSort"
-    :lb-click="() => { if (openVerses) openVerses = false; else { store.showOpacityAnimation.value = false; $router.back(); } }"
-    :rb="!openVerses"
+    :lb-click="handleBack"
+    :rb="!isVerseView"
   >
     <div>
-      <touch-ripple :duration="200" class="overflow-hidden rounded-full w-full" v-if="!openVerses">
+      <touch-ripple :duration="200" class="overflow-hidden rounded-full" v-if="!isVerseView">
         <div class="rounded-4xl bg-[var(--chapters)] flex items-center pr-4">
           <div class="min-w-[3.5rem] flex items-center justify-center">
             <i class="fa-solid fa-search"></i>
@@ -23,18 +23,22 @@
   </Navbar>
   
   <Transition name="pop" v-if="visible">
-    <div v-if="!openVerses" class="px-4 pb-6 h-full flex flex-col w-full fixed">
-      <div class="overflow-y-auto flex-grow pb-[4rem] mb-0.2">
+    <div v-if="!isVerseView" class="px-4 pb-6 h-full flex flex-col w-full fixed">
+      <div
+        ref="selectorScrollContainer"
+        class="overflow-y-auto flex-grow pb-[4rem] mb-0.2"
+        @scroll="onScroll"
+      >
         <div
-          v-for="(book, index) in filteredBooks"
+          v-for="book in filteredBooks"
           :key="book.original"
-          ref="bookRefs"
+          :ref="(el) => setBookRef(el as HTMLDivElement | null, book.original)"
           class="mb-0.5"
         >
           <touch-ripple :duration="200" class="overflow-hidden rounded-lg">
             <button
               class="w-full text-left px-3 py-4 rounded-lg"
-              @click="onBookClick(book.original, index)"
+              @click="onBookClick(book.original)"
             >
               {{ book.book }}
             </button>
@@ -47,7 +51,10 @@
               <button
                 v-for="chapter in book.chapters"
                 :key="chapter"
-                class="rounded-md bg-[var(--chapters)] text-center aspect-square"
+                class="rounded-md text-center aspect-square transition-colors"
+                :class="chapter - 1 === store.selectedChapter.value && book.original === store.selectedBook.value
+                  ? 'bg-white text-black font-bold ring-2 ring-white/50'
+                  : 'bg-[var(--chapters)] text-white'"
                 @click="selectChapter(book.original, chapter - 1)"
               >
                 <touch-ripple :duration="200" class="overflow-hidden h-full text-center flex items-center justify-center rounded-md">
@@ -90,9 +97,9 @@
 
 <script setup lang="ts">
 import { ref, computed, nextTick, onMounted, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { useStore } from "@/store";
 import bookChapterCountsJson from "@/bibles/book_chapter_counts.json";
-import router from "@/router";
 import { useChapters } from "@/scripts/utils";
 import { TouchRipple } from 'vue-touch-ripple';
 import 'vue-touch-ripple/style.css';
@@ -106,22 +113,91 @@ interface BookChapterCounts {
 }
 
 const store = useStore();
+const route = useRoute();
+const router = useRouter();
 const { getVersesLen, getChapterName } = useChapters();
 
 const expandedBookIndex = ref<number | null>(null);
 const nextExpandedBookIndex = ref<number | null>(null);
-const bookRefs = ref<(HTMLDivElement | null)[]>([]);
+const bookRefs = new Map<number, HTMLDivElement>();
+const selectorScrollContainer = ref<HTMLDivElement | null>(null);
+const savedScrollTop = ref(0);
 const searchTerm = ref("");
-const openVerses = ref(false);
 const visible = ref(false);
 const sortAlphabetically = ref(false);
 
 const bookChapterCounts = bookChapterCountsJson as BookChapterCounts;
 
+function validateParams(bookParam: unknown, chapterParam: unknown) {
+  if (!bookParam && !chapterParam) {
+    return { valid: true, isVerse: false, bookIndex: 0, chapterIndex: 0 };
+  }
+  if (!bookParam || !chapterParam) {
+    return { valid: false, isVerse: false, bookIndex: 0, chapterIndex: 0 };
+  }
+  const bStr = String(bookParam);
+  const cStr = String(chapterParam);
+  if (!/^\d+$/.test(bStr) || !/^\d+$/.test(cStr)) {
+    return { valid: false, isVerse: false, bookIndex: 0, chapterIndex: 0 };
+  }
+  const bookNum = parseInt(bStr, 10);
+  const chapterNum = parseInt(cStr, 10);
+  const lang = store.firstLang.value;
+  const list = bookChapterCounts[lang] || [];
+  const bookIndex = bookNum - 1;
+  if (bookIndex < 0 || bookIndex >= list.length) {
+    return { valid: false, isVerse: false, bookIndex: 0, chapterIndex: 0 };
+  }
+  const maxChapters = list[bookIndex].chapters;
+  const chapterIndex = chapterNum - 1;
+  if (chapterIndex < 0 || chapterIndex >= maxChapters) {
+    return { valid: false, isVerse: false, bookIndex: 0, chapterIndex: 0 };
+  }
+  return { valid: true, isVerse: true, bookIndex, chapterIndex };
+}
+
+const isVerseView = computed(() => {
+  const result = validateParams(route.params.book, route.params.chapter);
+  return result.valid && result.isVerse;
+});
+
+watch(
+  () => [route.params.book, route.params.chapter, store.firstLang.value],
+  ([bookParam, chapterParam]) => {
+    if (route.name !== 'Chapters') return;
+    const result = validateParams(bookParam, chapterParam);
+    if (!result.valid) {
+      router.replace('/chapters');
+      return;
+    }
+    if (result.isVerse) {
+      store.selectedBook.value = result.bookIndex;
+      store.selectedChapter.value = result.chapterIndex;
+      expandedBookIndex.value = result.bookIndex;
+    }
+  },
+  { immediate: true }
+);
+
+watch(isVerseView, async (isVerse, wasVerse) => {
+  if (!isVerse && wasVerse) {
+    await nextTick();
+    requestAnimationFrame(() => {
+      if (selectorScrollContainer.value) {
+        if (savedScrollTop.value > 0) {
+          selectorScrollContainer.value.scrollTop = savedScrollTop.value;
+        } else {
+          scrollToBook(store.selectedBook.value, 'auto');
+        }
+      }
+    });
+  }
+});
+
 const books = computed(() => {
   const lang = store.firstLang.value;
-  const books = bookChapterCounts[lang] || [];
-  return books.map((b, original) => ({
+  const booksList = bookChapterCounts[lang] || [];
+  return booksList.map((b, original) => ({
     ...b,
     chapters: b.chapters, 
     original
@@ -143,12 +219,30 @@ const filteredBooks = computed(() => {
   return booksList;
 });
 
-function onBookClick(originalIndex: number, listIndex: number) {
+function setBookRef(el: HTMLDivElement | null, originalIndex: number) {
+  if (el) {
+    bookRefs.set(originalIndex, el);
+  } else {
+    bookRefs.delete(originalIndex);
+  }
+}
+
+function scrollToBook(originalIndex: number, behavior: ScrollBehavior = 'smooth') {
+  const el = bookRefs.get(originalIndex);
+  el?.scrollIntoView({
+    behavior,
+    block: "start"
+  });
+}
+
+function onBookClick(originalIndex: number) {
   if (expandedBookIndex.value === originalIndex) {
     expandedBookIndex.value = null;
   } else if (expandedBookIndex.value === null || searchTerm.value) {
     expandedBookIndex.value = originalIndex;
-    scrollToBook(listIndex);
+    nextTick(() => {
+      scrollToBook(originalIndex);
+    });
   } else {
     nextExpandedBookIndex.value = originalIndex;
     expandedBookIndex.value = null;
@@ -157,46 +251,65 @@ function onBookClick(originalIndex: number, listIndex: number) {
 
 function afterLeave() {
   if (nextExpandedBookIndex.value !== null) {
-    expandedBookIndex.value = nextExpandedBookIndex.value;
+    const target = nextExpandedBookIndex.value;
+    expandedBookIndex.value = target;
     nextExpandedBookIndex.value = null;
     nextTick(() => {
-      scrollToBook(expandedBookIndex.value!);
+      scrollToBook(target);
     });
   }
 }
 
-function scrollToBook(index: number) {
-  bookRefs.value[index]?.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
-}
-
-function selectChapter(bookIndex: number, chapter: number) {
+function selectChapter(bookIndex: number, chapterIndex: number) {
   store.selectedBook.value = bookIndex;
-  store.selectedChapter.value = chapter;
-  console.log(`Selected: Book ${bookIndex} Chapter ${chapter}`);
-  openVerses.value = true;
+  store.selectedChapter.value = chapterIndex;
+  if (selectorScrollContainer.value) {
+    savedScrollTop.value = selectorScrollContainer.value.scrollTop;
+  }
+  router.push(`/chapters/${bookIndex + 1}/${chapterIndex + 1}`);
 }
 
-onMounted(() => {
+onMounted(async () => {
   store.showOpacityAnimation.value = true;
-  store.selectedVerse.value = 0;
-  setTimeout(() => {
-    onBookClick(store.selectedBook.value, store.selectedBook.value);
-  }, 100);
+  if (expandedBookIndex.value === null) {
+    expandedBookIndex.value = store.selectedBook.value;
+  }
   visible.value = true;
-})
+  if (!isVerseView.value) {
+    await nextTick();
+    scrollToBook(store.selectedBook.value, 'auto');
+  }
+});
 
 function choose(verse: number) {
   store.selectedVerse.value = verse - 1;
-  openVerses.value = false;
   router.push('/');
 }
 
 function toggleSort() {
-  return
   sortAlphabetically.value = !sortAlphabetically.value;
+}
+
+function handleBack() {
+  if (isVerseView.value) {
+    if (window.history.state?.back) {
+      router.back();
+    } else {
+      router.replace('/chapters');
+    }
+  } else {
+    store.showOpacityAnimation.value = false;
+    if (window.history.state?.back) {
+      router.back();
+    } else {
+      router.push('/');
+    }
+  }
+}
+
+function onScroll(e: Event) {
+  const target = e.target as HTMLElement;
+  savedScrollTop.value = target.scrollTop;
 }
 </script>
 

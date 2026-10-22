@@ -19,7 +19,7 @@ const router = createRouter({
       component: main,
     },
     {
-      path: '/chapters',
+      path: '/chapters/:book?/:chapter?',
       name: 'Chapters',
       component: () => import('../components/Chapters.vue'),
     },
