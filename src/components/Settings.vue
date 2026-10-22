@@ -4,48 +4,75 @@
       <h6>duet.bible</h6>
     </div>
     <div
-      class="justify-center h-full transition-all duration-300 ease-in-out mt-10 overflow-hidden"
-      :class="{ 'flex overflow-hidden': !openLangChooser, 'flex-col': openLangChooser }"
+      class="justify-center h-full  transition-all duration-300 ease-in-out mt-10 overflow-hidden"
+      :class="{ 'flex-col gap-3': openLangChooser }"
     >
-      <div :class="{'flex': openLangChooser}">
-        <div
-          class="bg-[var(--chapters)] rounded-xl relative flex items-center transition-all duration-300 ease-in-out justify-center"
-        >
-          <div class="p-3.5 flex flex-col items-center relative">
-            <touch-ripple :duration="200" class="overflow-hidden rounded-md">
+      <div :class="{'flex-col w-full': openLangChooser}">
+        <div class="flex items-center justify-between w-full pb-3">
+          <div class="flex gap-2 items-center justify-between">
+            <touch-ripple :duration="200" class="shrink-0 w-10 h-10 overflow-hidden rounded-full">
               <div
-                class="rounded-lg w-16 cursor-pointer h-10 justify-center items-center flex select-none transition-opacity duration-300 ease-in-out"
+                class="bg-[var(--chapters)] shrink-0 w-10 h-10 flex items-center justify-center aspect-square rounded-full"
+                @click="showVerses1stLang = !showVerses1stLang"
+              >
+                <i class="fa-solid fa-eye" v-if="showVerses1stLang"></i>
+                <i class="fa-solid fa-eye-slash" v-else></i>
+              </div>
+            </touch-ripple>
+            <touch-ripple :duration="200" class="rounded-md">
+              <div
+                class="rounded-lg max-w-16 aspect-video cursor-pointer max-h-10 justify-center items-center flex select-none transition-opacity duration-300 ease-in-out"
                 :style="{ opacity: showVerses1stLang ? '100%' : '30%' }"
                 @click="openLangChooser = !openLangChooser"
-                >
-              <img :src="icons[firstLang]" class="h-16" />
-            </div>
-            </touch-ripple>
-            <div class="flex items-center justify-center py-1">
-              <touch-ripple :duration="200" class="overflow-hidden rounded-full">
-                <div
-                  class="bg-[var(--chapters)] w-12 flex items-center justify-center aspect-square rounded-full"
-                  @click="swap"
-                >
-                  <i class="fa-solid fa-right-left transform rotate-90"></i>
-                </div>
-              </touch-ripple>
-            </div>
-            <touch-ripple :duration="200" class="overflow-hidden relative rounded-md ">
-              <div
-                class="rounded-lg w-16 cursor-pointer h-10 justify-center items-center flex select-none transition-opacity duration-300 ease-in-out"
-                :style="{ opacity: showVerses2stLang ? '100%' : '30%' }"
-                @click="openLangChooser = !openLangChooser"
               >
-                <img :src="icons[secondLang]" class="h-16" />
+                <img :src="icons[firstLang]" class="h-16" />
               </div>
             </touch-ripple>
           </div>
+          <div class="flex items-center justify-center px-2 gap-1">
+            <touch-ripple :duration="200" class="overflow-hidden rounded-full">
+              <div
+                class="bg-[var(--chapters)] shrink-0 w-10 h-10 flex items-center justify-center aspect-square rounded-full"
+                @click="swap"
+              >
+                <i class="fa-solid fa-right-left"></i>
+              </div>
+            </touch-ripple>
+            <touch-ripple :duration="200" class="overflow-hidden rounded-full">
+              <div
+                class="bg-[var(--chapters)] shrink-0 w-10 h-10 flex items-center justify-center aspect-square rounded-full"
+                @click="openLangChooser = !openLangChooser"
+              >
+                <i class="fa-solid fa-chevron-right transform rotate-90" v-if="!openLangChooser"></i>
+                <i class="fa-solid fa-xmark" v-else></i>
+              </div>
+            </touch-ripple>
+          </div>
+          <div class="flex gap-2 items-center justify-between">
+            <touch-ripple :duration="200" class="rounded-md">
+              <div
+              class="rounded-lg max-w-16 aspect-video cursor-pointer max-h-10 justify-center items-center flex select-none transition-opacity duration-300 ease-in-out"
+              :style="{ opacity: showVerses2stLang ? '100%' : '30%' }"
+              @click="openLangChooser = !openLangChooser"
+              >
+              <img :src="icons[secondLang]" class="h-16" />
+            </div>
+          </touch-ripple>
+          <touch-ripple :duration="200" class="shrink-0 w-10 h-10 overflow-hidden rounded-full">
+            <div
+              class="bg-[var(--chapters)] shrink-0 w-10 h-10 flex items-center justify-center aspect-square rounded-full"
+              @click="showVerses2stLang = !showVerses2stLang"
+            >
+              <i class="fa-solid fa-eye" v-if="showVerses2stLang"></i>
+              <i class="fa-solid fa-eye-slash" v-else></i>
+            </div>
+          </touch-ripple>
+          </div>
         </div>
         <div class=" flex items-center justify-center transition-width duration-300 ease-in-out"
-        :class="{ 'w-0 overflow-hidden h-0': !openLangChooser, 'w-full pl-3 h-auto overflow-hidden': openLangChooser }">
+        :class="{ 'w-0 overflow-hidden h-0': !openLangChooser, 'w-full h-auto overflow-hidden': openLangChooser }">
           <div
-            class="bg-[var(--chapters)] rounded-xl flex flex-col items-center transition-all duration-300 ease-in-out w-full h-full justify-center"
+            class="rounded-xl flex items-center transition-all duration-300 ease-in-out w-full h-full justify-center"
           >
             <div class="relative flex items-center justify-center overflow-x-auto overflow-y-hidden w-full ">
               <div
@@ -54,7 +81,7 @@
               >
                 <touch-ripple :duration="200" class="overflow-hidden rounded-md ">
                   <div
-                    class="rounded-lg w-16 cursor-pointer h-10 justify-center items-center flex select-none"
+                    class="rounded-lg max-w-16 aspect-video cursor-pointer max-h-10 justify-center items-center flex select-none"
                     @click="firstLang = lang"
                   >
                     <img :src="icons[lang]" class="h-16" />
@@ -62,13 +89,7 @@
                 </touch-ripple>
               </div>
             </div>
-            <div class="py-1">
-              <touch-ripple :duration="200" class="overflow-hidden rounded-full">
-                <div class="flex items-center min-h-12 justify-center py-1 text-2xl text-[var(--chapter)]" @click="openLangChooser = false">
-                  <i class="fa-solid fa-xmark"></i>
-                </div>
-              </touch-ripple>
-            </div>
+           
             <div class="relative flex items-center justify-center overflow-x-auto overflow-y-hidden w-full ">
               <div
                 v-for="lang in availableLang"
@@ -86,38 +107,13 @@
             </div>
           </div>
         </div>
-        <div :class="{ 'w-0 overflow-hidden h-0': !openLangChooser, 'ml-3 h-auto overflow-hidden': openLangChooser }">
-          <div class="bg-[var(--chapters)] rounded-xl overflow-hidden relative flex flex-col items-center transition-all duration-100 ease-in-out h-full justify-center">
-            <div class="relative top-0 bottom-0 h-full w-full min-w-36">
-              <touch-ripple :duration="200" class="overflow-hidden rounded-t-xl h-full w-full">
-                <div
-                  class="bg-[var(--chapters)] flex items-start justify-center pt-6 w-full h-full"
-                  @click="showVerses1stLang = !showVerses1stLang"
-                >
-                  <i class="fa-solid fa-eye" v-if="showVerses1stLang"></i>
-                  <i class="fa-solid fa-eye-slash" v-else></i>
-                </div>
-              </touch-ripple>
-            </div>
-            <div class="relative top-0 bottom-0 h-full w-full min-w-12">
-              <touch-ripple :duration="200" class="overflow-hidden rounded-b-xl h-full w-full">
-                <div
-                  class="bg-[var(--chapters)] flex justify-center items-end pb-6 h-full w-full"
-                  @click="showVerses2stLang = !showVerses2stLang"
-                >
-                  <i class="fa-solid fa-eye" v-if="showVerses2stLang"></i>
-                  <i class="fa-solid fa-eye-slash" v-else></i>
-                </div>
-              </touch-ripple>
-            </div>
-          </div>
-        </div>
       </div>
+
       <div
         class="w-full transition-all duration-300 ease-in-out flex"
-        :class="{ 'ml-3': !openLangChooser, 'mt-3': openLangChooser }"
+        :class="{ 'mt-3': openLangChooser }"
       >
-        <div v-if="openLangChooser" class="pr-3 min-h-full">
+        <div class="pr-3 min-h-full">
           <div
               class="rounded-lg h-full w-16 cursor-pointer justify-center items-center select-none"
             >
@@ -151,7 +147,7 @@
               <touch-ripple :duration="200" class="overflow-hidden rounded-xl w-full bg-[var(--chapters)]">
                 <div
                   class="bg-[var(--chapters)] flex items-center justify-center h-full min-w-full"
-                  @click="share('📖🤩Check out duet.bible!', '', 'https://duetbible.web.app/')"
+                  @click="share('DuetBible', '', 'https://duetbible.web.app/')"
                 >
                   <i class="fa-solid fa-share-nodes"></i>
                 </div>
@@ -174,9 +170,9 @@
         </div>
       </div>
     </div>
-    <div class="pt-3 flex" v-if="!openLangChooser">
+    <div class="pt-3 flex">
       <div class="flex w-full mr-0">
-        <touch-ripple :duration="200" class="overflow-hidden rounded-xl w-full bg-[var(--chapters)]">
+        <touch-ripple :duration="200" class="overflow-hidden rounded-xl h-15 w-full bg-[var(--chapters)]">
           <div
             class="bg-[var(--chapters)] flex items-center justify-center h-full min-w-full"
             @click="getRandomVerse(), random= true"
@@ -185,18 +181,7 @@
           </div>
         </touch-ripple>
       </div>
-      <div
-        class="rounded-lg h-15 aspect-square cursor-pointer justify-center items-center select-none ml-2.5"
-      >
-        <touch-ripple :duration="200" class="overflow-hidden rounded-xl w-full bg-[var(--chapters)]">
-          <div
-            class="bg-[var(--chapters)] flex items-center justify-center aspect-square"
-            @click="installApp"
-          >
-            <i class="fa-solid fa-download"></i>
-          </div>
-        </touch-ripple>
-      </div>
+    
     </div>
   </BottomSheet>
   <BottomSheet v-model="random" 
