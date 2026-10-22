@@ -200,15 +200,32 @@ const currentScrollElement = ref<'scrollRef1' | 'scrollRef2' | null>(null);
 
 function updateVerticalScroll(event: Event) {
   if (!lockedScroll.value || showOpacityAnimation.value) return;
-  
-  const target = event.target as HTMLElement;
-  const scrollTop = toInt(target.scrollTop);
-  
-  if (currentScrollElement.value === 'scrollRef2' && scrollRef1.value) {
-    scrollRef1.value.scrollTop = scrollTop;
-  } else if (currentScrollElement.value === 'scrollRef1' && scrollRef2.value) {
-    scrollRef2.value.scrollTop = scrollTop;
-  }
+
+  const active = currentScrollElement.value;
+  if (!active) return;
+
+  const source =
+    active === 'scrollRef1' ? scrollRef1.value : scrollRef2.value;
+
+  const target =
+    active === 'scrollRef1' ? scrollRef2.value : scrollRef1.value;
+
+  if (!source || !target || event.currentTarget !== source) return;
+
+  const sourceRange = source.scrollHeight - source.clientHeight;
+  if (sourceRange <= 0) return;
+
+  const progress = Math.max(
+    0,
+    Math.min(1, source.scrollTop / sourceRange)
+  );
+
+  const targetRange = Math.max(
+    0,
+    target.scrollHeight - target.clientHeight
+  );
+
+  target.scrollTop = progress * targetRange;
 }
 
 function updateCurrentElement(element: 'scrollRef1' | 'scrollRef2') {
