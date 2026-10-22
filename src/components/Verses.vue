@@ -19,7 +19,7 @@
           userSelect: 'none',
           marginRight: '0.4rem',
           opacity: `${(verse.verse - 1) === selectedVerse ? 100 : onLoad}%`,
-          transition: 'all 0.5s ease',
+          transition: 'opacity 0.5s ease',
         }"
       >
         {{ verse.verse }}.
@@ -27,7 +27,7 @@
       <span
         class="verse-text"
         :style="{
-          transition: 'all 0.5s ease',
+          transition: 'opacity 0.5s ease, background-color 0.25s ease',
           backgroundColor: getColor(index),
           userSelect: 'none',
           opacity: `${(verse.verse - 1) === selectedVerse ? 100 : onLoad}%`,
@@ -91,9 +91,7 @@ onMounted(() => {
   }
 });
 
-watch(() => selectedVerse.value, () => {
-  scrollToSelectedVerse();
-});
+watch(selectedVerse, scrollToSelectedVerse, { flush: 'post' });
 
 function scrollToSelectedVerse() {
   const el = verseSpans.value[selectedVerse.value];

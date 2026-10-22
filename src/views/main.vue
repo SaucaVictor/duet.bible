@@ -2,14 +2,14 @@
   <div class="flex flex-col relative select-none" :style="{ height: `${windowHeight}px` }">
     <div
       ref="scrollRef1"
-      class="flex-1 overflow-x-hidden"
+      class="flex-1 min-h-0 overflow-x-hidden"
       @scroll="updateVerticalScroll"
       @mouseenter="updateCurrentElement('scrollRef1')"
       @touchstart="updateCurrentElement('scrollRef1')"
       :class="[ !showOpacityAnimation ? 'overflow-y-scroll' : 'overflow-y-hidden' ]"
       v-if="showVerses1stLang"
     >
-      <Verses :lang="firstLang" ptsafe :key="`${firstLang}-${selectedBook}-${selectedChapter}-${selectedVerse}`"/>
+      <Verses :lang="firstLang" ptsafe :key="`${firstLang}-${selectedBook}-${selectedChapter}`"/>
     </div>
     <div v-if="showVerses1stLang && showVerses2stLang"
       class="h-2 bg-[var(--chapters)] z-10 items-center flex justify-center gap-2"
@@ -35,14 +35,14 @@
 
     <div
       ref="scrollRef2"
-      class="flex-1 overflow-x-hidden"
+      class="flex-1 min-h-0 overflow-x-hidden"
       @scroll="updateVerticalScroll" 
       @mouseenter="updateCurrentElement('scrollRef2')"
       @touchstart="updateCurrentElement('scrollRef2')"
       :class="[ !showOpacityAnimation ? 'overflow-y-scroll' : 'overflow-y-hidden' ]"
       v-if="showVerses2stLang"
     >
-      <Verses :lang="secondLang" :ptsafe="showVerses2stLang && !showVerses1stLang" :key="`${secondLang}-${selectedBook}-${selectedChapter}-${selectedVerse}`"/>
+      <Verses :lang="secondLang" :ptsafe="showVerses2stLang && !showVerses1stLang" :key="`${secondLang}-${selectedBook}-${selectedChapter}`"/>
     </div>
     <div v-if="!showVerses1stLang && !showVerses2stLang" class="flex justify-center items-center w-full text-center h-full">
       <div>
