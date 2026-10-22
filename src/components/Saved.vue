@@ -1,18 +1,6 @@
 <template>
-  <Navbar toHome slotRb :rbClick="() => changeLang = true">
-    <template #slotRb>
-      <div class="h-full w-full">
-        <div class="relative flex items-center justify-center h-full">
-          <div class="absolute top-1.5 w-4.5 cursor-pointer justify-center items-center flex select-none">
-            <img :src="icons[firstLang]" />
-          </div>
-          <div class="absolute w-4.5 bottom-1.5 cursor-pointer items-center select-none ">
-            <img :src="icons[secondLang]" />
-          </div>
-        </div>
-      </div>
-    </template>
-  </Navbar>
+  <Navbar toHome />
+  
   <div class="overflow-y-scroll pb-[6rem] select-none" :style="{ height: `${windowHeight}px` }">
     <div
       v-for="item in highlightedVerses"
@@ -161,7 +149,6 @@
       </div>
     </div>
   </div>
-  <Settings v-model="changeLang"/>
 </template>
 
 <script setup lang="ts">
@@ -175,7 +162,6 @@ import Settings from './Settings.vue';
 
 const { highlighted, firstLang, secondLang } = useStore();
 const { getVerse, getChapterName, goToVerse } = useChapters();
-const changeLang = ref(false);
 
 const highlightedVerses = computed(() => {
   const result: {

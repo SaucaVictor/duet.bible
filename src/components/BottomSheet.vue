@@ -80,9 +80,11 @@ const props = withDefaults(defineProps<{
     icon: string;
     onClick: () => void;
   };
+  fullProc?: number;
 }>(), {
   closeOnBackdrop: true,
-  closeThreshold: 100
+  closeThreshold: 100,
+  fullProc: 0.95
 })
 
 const emit = defineEmits<{
@@ -95,7 +97,7 @@ const translateY = ref(0)
 const isEntering = ref(false)
 const dragging = ref(false)
 const startX = ref(0)
-const windowHeight = ref(window.innerHeight * 0.95);
+const windowHeight = ref(window.innerHeight * props.fullProc);
 const safeAreaProbe = ref<HTMLElement | null>(null);
 const safeAreaTop = ref(0);
 const defaultSlotContainer = ref<HTMLElement | null>(null);
@@ -117,7 +119,7 @@ function isScrollAtTop(): boolean {
 }
 
 function onTouchStart(event: TouchEvent) {
-  if (!props.modelValue || isEntering.value) return;
+  if (!props.modelValue || isEntering.value || dragging.value) return;
 
   if (!isScrollAtTop()) {
     dragging.value = false;
@@ -198,7 +200,7 @@ onMounted(() => {
 
   document.addEventListener('keydown', handleKeydown);
   const updateHeight = () => {
-    windowHeight.value = window.innerHeight * 0.95 - safeAreaTop.value;
+    windowHeight.value = window.innerHeight * props.fullProc - safeAreaTop.value;
     updateScrollAreaHeight();
   };
 

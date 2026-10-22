@@ -3,7 +3,9 @@
     <div
       ref="scrollRef1"
       class="flex-1 overflow-x-hidden"
-      @scroll="onScroll(1)"
+      @scroll="updateVerticalScroll"
+      @mouseenter="updateCurrentElement('scrollRef1')"
+      @touchstart="updateCurrentElement('scrollRef1')"
       :class="[ !showOpacityAnimation ? 'overflow-y-scroll' : 'overflow-y-hidden' ]"
       v-if="showVerses1stLang"
     >
@@ -34,7 +36,9 @@
     <div
       ref="scrollRef2"
       class="flex-1 overflow-x-hidden"
-      @scroll="onScroll(2)"
+      @scroll="updateVerticalScroll" 
+      @mouseenter="updateCurrentElement('scrollRef2')"
+      @touchstart="updateCurrentElement('scrollRef2')"
       :class="[ !showOpacityAnimation ? 'overflow-y-scroll' : 'overflow-y-hidden' ]"
       v-if="showVerses2stLang"
     >
@@ -190,48 +194,28 @@ const { getChapterName, nextChapter, previousChapter, getVerse, shareVerse, goTo
 const windowHeight = ref(window.innerHeight);
 const settings = ref(false);
 
-
 const scrollRef1 = ref<HTMLElement | null>(null);
 const scrollRef2 = ref<HTMLElement | null>(null);
-let isSyncingScroll = false;
+const currentScrollElement = ref<'scrollRef1' | 'scrollRef2' | null>(null);
 
-let activeScroll = ref<1 | 2 | null>(null);
-let lastScrollTop = ref(0);
-let scrollFrame: number | null = null;
-
-function syncScroll(scrolledDiv: 1 | 2) {
-  if (!lockedScroll.value || !scrollRef1.value || !scrollRef2.value || showOpacityAnimation.value) return;
-
-  const source = scrolledDiv === 1 ? scrollRef1.value : scrollRef2.value;
-  const target = scrolledDiv === 1 ? scrollRef2.value : scrollRef1.value;
-
-  const scrollTop = source.scrollTop;
-
-  if (Math.abs(scrollTop - lastScrollTop.value) > 1) {
-    lastScrollTop.value = scrollTop;
-    if (target.scrollTop !== scrollTop) {
-      target.scrollTop = scrollTop;
-    }
-  }
-
-  if (scrollFrame) cancelAnimationFrame(scrollFrame);
-  scrollFrame = requestAnimationFrame(() => syncScroll(scrolledDiv));
-}
-
-function onScroll(scrolledDiv: number) {
-  if (!lockedScroll.value) return;
-
-  if (activeScroll.value !== scrolledDiv) {
-    activeScroll.value = scrolledDiv as 1 | 2;
-    syncScroll(scrolledDiv as 1 | 2);
-
-    setTimeout(() => {
-      activeScroll.value = null;
-      if (scrollFrame) cancelAnimationFrame(scrollFrame);
-    }, 150);
+function updateVerticalScroll(event: Event) {
+  if (!lockedScroll.value || showOpacityAnimation.value) return;
+  
+  const target = event.target as HTMLElement;
+  const scrollTop = toInt(target.scrollTop);
+  
+  if (currentScrollElement.value === 'scrollRef2' && scrollRef1.value) {
+    scrollRef1.value.scrollTop = scrollTop;
+  } else if (currentScrollElement.value === 'scrollRef1' && scrollRef2.value) {
+    scrollRef2.value.scrollTop = scrollTop;
   }
 }
 
+function updateCurrentElement(element: 'scrollRef1' | 'scrollRef2') {
+  currentScrollElement.value = element;
+}
+
+function toInt(n: number){ return Math.round(n); };
 
 function swap() {
   const l = firstLang.value;

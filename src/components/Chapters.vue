@@ -2,7 +2,7 @@
   <Navbar 
     right-icon="fa-solid fa-arrow-down-a-z"
     :rb-click="toggleSort"
-    :lb-click="() => { if (openVerses) openVerses = false; else { store.showOpacityAnimation.value = false; router.back(); } }"
+    :lb-click="() => { if (openVerses) openVerses = false; else { store.showOpacityAnimation.value = false; $router.back(); } }"
     :rb="!openVerses"
   >
     <div>
@@ -21,6 +21,7 @@
       </touch-ripple>
     </div>
   </Navbar>
+  
   <Transition name="pop" v-if="visible">
     <div v-if="!openVerses" class="px-4 pb-6 h-full flex flex-col w-full fixed">
       <div class="overflow-y-auto flex-grow pb-[4rem] mb-0.2">
@@ -33,14 +34,14 @@
           <touch-ripple :duration="200" class="overflow-hidden rounded-lg">
             <button
               class="w-full text-left px-3 py-4 rounded-lg"
-              @click="onBookClick(index)"
+              @click="onBookClick(book.original, index)"
             >
               {{ book.book }}
             </button>
           </touch-ripple>
           <Transition name="expand" @after-leave="afterLeave">
             <div
-              v-if="expandedBookIndex === index"
+              v-if="expandedBookIndex === book.original"
               class="grid grid-cols-5 gap-2 px-3 py-1 overflow-hidden"
             >
               <button
@@ -84,6 +85,7 @@
       </div>
     </Transition>
   </Transition>
+  
 </template>
 
 <script setup lang="ts">
@@ -141,12 +143,12 @@ const filteredBooks = computed(() => {
   return booksList;
 });
 
-function onBookClick(originalIndex: number) {
+function onBookClick(originalIndex: number, listIndex: number) {
   if (expandedBookIndex.value === originalIndex) {
     expandedBookIndex.value = null;
   } else if (expandedBookIndex.value === null || searchTerm.value) {
     expandedBookIndex.value = originalIndex;
-    scrollToBook(originalIndex);
+    scrollToBook(listIndex);
   } else {
     nextExpandedBookIndex.value = originalIndex;
     expandedBookIndex.value = null;
@@ -181,7 +183,7 @@ onMounted(() => {
   store.showOpacityAnimation.value = true;
   store.selectedVerse.value = 0;
   setTimeout(() => {
-    onBookClick(store.selectedBook.value);
+    onBookClick(store.selectedBook.value, store.selectedBook.value);
   }, 100);
   visible.value = true;
 })
